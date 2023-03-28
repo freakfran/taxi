@@ -1,13 +1,16 @@
 package com.fran.apipassenger.service;
 
+import com.alibaba.cloud.commons.lang.StringUtils;
 import com.alibaba.fastjson.JSONObject;
 import com.fran.apipassenger.remote.VerificationCodeClient;
+import com.fran.constant.CommonStatusEnum;
 import com.fran.dto.CommonResult;
 import com.fran.response.NumberCodeResponse;
 import com.fran.response.TokenResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+
 
 import java.util.concurrent.TimeUnit;
 
@@ -20,7 +23,9 @@ public class VerificationCodeServiceImpl implements VerificationCodeService{
     private StringRedisTemplate stringRedisTemplate;
 
     private String verificationCodePrefix = "passenger-verification-code";
-
+    private String generateKeyByPhone(String passengerPhone){
+        return verificationCodePrefix + passengerPhone;
+    }
     @Override
     public CommonResult generateCode(String passengerPhone) {
         //调用验证码服务，生成验证码
@@ -30,7 +35,7 @@ public class VerificationCodeServiceImpl implements VerificationCodeService{
         System.out.println("numbercode="+numberCode);
 
         //验证码存入redis key,value,ttl
-        String key = verificationCodePrefix + passengerPhone;
+        String key = generateKeyByPhone(passengerPhone);
         String value = String.valueOf(numberCode);
         stringRedisTemplate.opsForValue().set(key,value,2, TimeUnit.MINUTES);
         System.out.println("验证码存入redis");
@@ -41,9 +46,13 @@ public class VerificationCodeServiceImpl implements VerificationCodeService{
     @Override
     public CommonResult checkCode(String passengerPhone, String verificationCode) {
         //根据手机号，从redis读取验证码
-        String code = stringRedisTemplate.opsForValue().get(passengerPhone);
+        String key = generateKeyByPhone(passengerPhone);
+        String codeRedis = stringRedisTemplate.opsForValue().get(key);
         //校验验证码
-
+        if(StringUtils.isBlank(codeRedis)||!(verificationCode.trim().equals(codeRedis.trim()))){
+            return CommonResult.fail(CommonStatusEnum.VERIFICATION_CODE_ERROR.getCode()
+                    ,CommonStatusEnum.VERIFICATION_CODE_ERROR.getMessage());
+        }
         //判断是否有用户，如果没有，则创建
 
         //创建响应
