@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.fran.apipassenger.remote.VerificationCodeClient;
 import com.fran.dto.CommonResult;
 import com.fran.response.NumberCodeResponse;
+import com.fran.response.TokenResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -35,5 +36,19 @@ public class VerificationCodeServiceImpl implements VerificationCodeService{
         System.out.println("验证码存入redis");
         //通过第三方短信服务发送验证码
         return CommonResult.success();
+    }
+
+    @Override
+    public CommonResult checkCode(String passengerPhone, String verificationCode) {
+        //根据手机号，从redis读取验证码
+        String code = stringRedisTemplate.opsForValue().get(passengerPhone);
+        //校验验证码
+
+        //判断是否有用户，如果没有，则创建
+
+        //创建响应
+        TokenResponse tokenResponse = new TokenResponse();
+        tokenResponse.setToken("token");
+        return CommonResult.success(tokenResponse);
     }
 }

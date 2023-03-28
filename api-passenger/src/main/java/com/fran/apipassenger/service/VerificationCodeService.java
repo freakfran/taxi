@@ -4,4 +4,6 @@ import com.fran.dto.CommonResult;
 
 public interface VerificationCodeService {
     public CommonResult generateCode(String passengerPhone);
+
+    public CommonResult checkCode(String passengerPhone,String verificationCode);
 }
