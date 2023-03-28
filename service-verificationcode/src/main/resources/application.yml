@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: service-verificaitoncode
+    name: service-verificationcode
   cloud:
     nacos:
       config:
