@@ -1,0 +1,15 @@
+server:
+  port: 8083
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/service-passenger-user?characterEncoding=utf-8&serverTimezone=GMT%2B8
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: 123456
+  application:
+    name: service-verificationcode
+  cloud:
+    nacos:
+      config:
+        server-addr: 127.0.0.1:8848

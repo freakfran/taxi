@@ -1,4 +1,4 @@
-package com.fran.apipassenger.request;
+package com.fran.request;
 
 import lombok.Data;
 

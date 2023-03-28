@@ -32,11 +32,6 @@
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.fran</groupId>
-            <artifactId>internal-common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
 
 </project>
