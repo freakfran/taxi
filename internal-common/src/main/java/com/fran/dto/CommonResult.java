@@ -11,6 +11,10 @@ public class CommonResult<T>{
     private String message;
     private T data;
 
+    public static CommonResult success(){
+        return new CommonResult().setCode(CommonStatusEnum.SUCCESS.getCode()).
+                setMessage(CommonStatusEnum.SUCCESS.getMessage());
+    }
     public static <T>CommonResult success(T data){
         return new CommonResult().setCode(CommonStatusEnum.SUCCESS.getCode()).
                 setMessage(CommonStatusEnum.SUCCESS.getMessage()).

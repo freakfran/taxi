@@ -1,5 +1,7 @@
 package com.fran.apipassenger.service;
 
+import com.fran.dto.CommonResult;
+
 public interface VerificationCodeService {
-    public String generateCode(String passengerPhone);
+    public CommonResult generateCode(String passengerPhone);
 }
