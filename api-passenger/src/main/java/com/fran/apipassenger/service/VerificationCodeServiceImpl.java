@@ -2,9 +2,11 @@ package com.fran.apipassenger.service;
 
 import com.alibaba.cloud.commons.lang.StringUtils;
 import com.alibaba.fastjson.JSONObject;
+import com.fran.apipassenger.remote.PassengerUserClient;
 import com.fran.apipassenger.remote.VerificationCodeClient;
 import com.fran.constant.CommonStatusEnum;
 import com.fran.dto.CommonResult;
+import com.fran.request.VerificationCodeDTO;
 import com.fran.response.NumberCodeResponse;
 import com.fran.response.TokenResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +45,8 @@ public class VerificationCodeServiceImpl implements VerificationCodeService{
         return CommonResult.success();
     }
 
+    @Autowired
+    private PassengerUserClient passengerUserClient;
     @Override
     public CommonResult checkCode(String passengerPhone, String verificationCode) {
         //根据手机号，从redis读取验证码
@@ -53,7 +57,10 @@ public class VerificationCodeServiceImpl implements VerificationCodeService{
             return CommonResult.fail(CommonStatusEnum.VERIFICATION_CODE_ERROR.getCode()
                     ,CommonStatusEnum.VERIFICATION_CODE_ERROR.getMessage());
         }
-        //判断是否有用户，如果没有，则创建
+        //判断是否有用户，如果没有，则创建,调用远程服务
+        VerificationCodeDTO dto = new VerificationCodeDTO();
+        dto.setPassengerPhone(passengerPhone);
+        passengerUserClient.loginOrRegister(dto);
 
         //创建响应
         TokenResponse tokenResponse = new TokenResponse();
