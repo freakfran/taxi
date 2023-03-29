@@ -42,7 +42,7 @@ public class TokenServiceImpl implements TokenService{
 
         //重新生成双token
         String accessToken = JwtUtils.generateToken(phone, identity, TokenTypeConstants.ACCESS_TOKEN_TYPE);
-        String refreshToken = JwtUtils.generateToken(phone, identity, TokenTypeConstants.ACCESS_TOKEN_TYPE);
+        String refreshToken = JwtUtils.generateToken(phone, identity, TokenTypeConstants.REFRESH_TOKEN_TYPE);
 
         String accessKey = RedisKeyUtils.generateTokenKey(phone,identity,TokenTypeConstants.ACCESS_TOKEN_TYPE);
         stringRedisTemplate.opsForValue().set(accessKey,accessToken,30, TimeUnit.DAYS);

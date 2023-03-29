@@ -23,6 +23,7 @@ public class JwtUtils {
     private static final String JWT_KEY_PHONE = "passengerPhone";
     private static final String JWT_KEY_IDENTITY = "identity";
     private static final String JWT_KEY_TOKEN_TYPE = "tokenType";
+    private static final String JWT_KEY_TOKEN_TIME = "tokenType";
 
     //生成token
     public static String generateToken(String passengerPhone,String identity,String tokenType){
@@ -30,6 +31,8 @@ public class JwtUtils {
         map.put(JWT_KEY_PHONE,passengerPhone);
         map.put(JWT_KEY_IDENTITY,identity);
         map.put(JWT_KEY_TOKEN_TYPE,tokenType);
+        //为了防止每一次生成的token都是一样的
+        map.put(JWT_KEY_TOKEN_TIME,new Date().toString());
         //过期时间 1天
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE,1);
