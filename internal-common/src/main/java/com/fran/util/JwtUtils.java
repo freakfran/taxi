@@ -3,6 +3,9 @@ package com.fran.util;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.AlgorithmMismatchException;
+import com.auth0.jwt.exceptions.SignatureVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fran.constant.IdentityConstants;
@@ -52,6 +55,18 @@ public class JwtUtils {
         TokenResult tokenResult = new TokenResult();
         tokenResult.setPhone(phone);
         tokenResult.setIdentity(identity);
+        return tokenResult;
+    }
+
+    //校验token
+    public static TokenResult checkToken(String token){
+        TokenResult tokenResult = null;
+        boolean result = true;
+        try {
+            tokenResult = JwtUtils.parseToken(token);
+        } catch (Exception e){
+            result = false;
+        }
         return tokenResult;
     }
     public static void main(String[] args) {

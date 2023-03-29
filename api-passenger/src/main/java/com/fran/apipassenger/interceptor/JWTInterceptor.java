@@ -29,38 +29,22 @@ public class JWTInterceptor implements HandlerInterceptor {
 
         //解析token
         String token = request.getHeader("Authorization");
-        TokenResult tokenResult = null;
-        try {
-            tokenResult = JwtUtils.parseToken(token);
-        }catch (SignatureVerificationException e){
-            resultString = "signature error";
-            result = false;
-        }catch (TokenExpiredException e){
-            resultString = "token expired";
-            result = false;
-        }catch (AlgorithmMismatchException e){
-            resultString = "token AlgorithmMismatchException";
-            result = false;
-        }catch (Exception e){
-            resultString = "token exception";
-            result = false;
-        }
+        TokenResult tokenResult = JwtUtils.checkToken(token);
 
         //校验token
-        if(result&&tokenResult!=null){
+        if(tokenResult!=null){
             String phone = tokenResult.getPhone();
             String identity = tokenResult.getIdentity();
             String tokenKey = RedisKeyUtils.generateTokenKey(phone,identity, TokenTypeConstants.ACCESS_TOKEN_TYPE);
             String tokenRedis = stringRedisTemplate.opsForValue().get(tokenKey);
-            if(StringUtils.isBlank(tokenRedis)){
+            if(StringUtils.isBlank(tokenRedis)||(!token.trim().equals(tokenRedis.trim()))){
                 resultString = "token invalid";
-                result = false;
-            }else if(!token.trim().equals(tokenRedis.trim())){
-                resultString = "token invalid";
+                response.getWriter().println(JSONObject.toJSONString(CommonResult.fail(resultString)));
                 result = false;
             }
-        }
-        if(!result){
+        }else{
+            resultString = "token invalid";
+            result = false;
             response.getWriter().println(JSONObject.toJSONString(CommonResult.fail(resultString)));
         }
         return result;
