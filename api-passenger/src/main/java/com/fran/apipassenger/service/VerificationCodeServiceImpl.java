@@ -26,9 +26,13 @@ public class VerificationCodeServiceImpl implements VerificationCodeService{
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
 
-    private String verificationCodePrefix = "passenger-verification-code";
+    private String verificationCodePrefix = "passenger-verification-code-";
+    private String tokenPrefix = "token-";
     private String generateKeyByPhone(String passengerPhone){
         return verificationCodePrefix + passengerPhone;
+    }
+    private String generateTokenKey(String phone,String identity){
+        return tokenPrefix + phone + "-" + identity;
     }
     @Override
     public CommonResult generateCode(String passengerPhone) {
@@ -65,6 +69,8 @@ public class VerificationCodeServiceImpl implements VerificationCodeService{
         passengerUserClient.loginOrRegister(dto);
         //生成token并存入
         String token = JwtUtils.generateToken(passengerPhone, IdentityConstants.IDENTITY_PASSENGER);
+        key = generateTokenKey(passengerPhone,IdentityConstants.IDENTITY_PASSENGER);
+        stringRedisTemplate.opsForValue().set(key,token,30,TimeUnit.DAYS);
 
         //创建响应
         TokenResponse tokenResponse = new TokenResponse();
