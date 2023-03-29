@@ -5,6 +5,7 @@ import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.fran.constant.IdentityConstants;
 import com.fran.dto.TokenResult;
 
 import java.util.Calendar;
@@ -18,12 +19,14 @@ public class JwtUtils {
 
     private static final String JWT_KEY_PHONE = "passengerPhone";
     private static final String JWT_KEY_IDENTITY = "identity";
+    private static final String JWT_KEY_TOKEN_TYPE = "tokenType";
 
     //生成token
-    public static String generateToken(String passengerPhone,String identity){
+    public static String generateToken(String passengerPhone,String identity,String tokenType){
         Map<String,String> map = new HashMap<>();
         map.put(JWT_KEY_PHONE,passengerPhone);
         map.put(JWT_KEY_IDENTITY,identity);
+        map.put(JWT_KEY_TOKEN_TYPE,tokenType);
         //过期时间 1天
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE,1);
@@ -44,18 +47,17 @@ public class JwtUtils {
     //解析token
     public static TokenResult parseToken(String token){
         DecodedJWT verify = JWT.require(Algorithm.HMAC256(SALT)).build().verify(token);
-        String phone = verify.getClaim(JWT_KEY_PHONE).toString();
-        String identity = verify.getClaim(JWT_KEY_IDENTITY).toString();
+        String phone = verify.getClaim(JWT_KEY_PHONE).asString();
+        String identity = verify.getClaim(JWT_KEY_IDENTITY).asString();
         TokenResult tokenResult = new TokenResult();
         tokenResult.setPhone(phone);
         tokenResult.setIdentity(identity);
         return tokenResult;
     }
     public static void main(String[] args) {
-        String token = generateToken("123456","1");
-        System.out.println(token);
-        TokenResult tokenResult = parseToken(token);
-        System.out.println(tokenResult.getPhone());
-        System.out.println(tokenResult.getIdentity());
+//        String token = generateToken("17314742659", IdentityConstants.IDENTITY_DRIVER);
+//        System.out.println(token);
+//        TokenResult tokenResult = parseToken(token);
+//        System.out.println(tokenResult.getPhone());
     }
 }
