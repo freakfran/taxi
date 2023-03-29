@@ -5,10 +5,12 @@ import com.alibaba.fastjson.JSONObject;
 import com.fran.apipassenger.remote.PassengerUserClient;
 import com.fran.apipassenger.remote.VerificationCodeClient;
 import com.fran.constant.CommonStatusEnum;
+import com.fran.constant.IdentityConstants;
 import com.fran.dto.CommonResult;
 import com.fran.request.VerificationCodeDTO;
 import com.fran.response.NumberCodeResponse;
 import com.fran.response.TokenResponse;
+import com.fran.util.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -61,10 +63,12 @@ public class VerificationCodeServiceImpl implements VerificationCodeService{
         VerificationCodeDTO dto = new VerificationCodeDTO();
         dto.setPassengerPhone(passengerPhone);
         passengerUserClient.loginOrRegister(dto);
+        //生成token并存入
+        String token = JwtUtils.generateToken(passengerPhone, IdentityConstants.IDENTITY_PASSENGER);
 
         //创建响应
         TokenResponse tokenResponse = new TokenResponse();
-        tokenResponse.setToken("token");
+        tokenResponse.setToken(token);
         return CommonResult.success(tokenResponse);
     }
 }
