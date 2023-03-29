@@ -9,6 +9,7 @@ public class PassengerUser {
     private Long id;
     private String passengerPhone;
     private String passengerName;
+    private String profilePhoto;
     private LocalDateTime gmtCreate;
     private LocalDateTime gmtModified;
     private Byte passengerGender;

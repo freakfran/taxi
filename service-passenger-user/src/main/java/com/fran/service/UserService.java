@@ -8,4 +8,5 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 public interface UserService {
     public CommonResult loginOrRegister(String passengerPhone);
+    public CommonResult getUserByPhone(String phone);
 }
