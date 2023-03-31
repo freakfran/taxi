@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.fran.constant.AMapConstants;
+import com.fran.dto.CommonResult;
 import com.fran.response.DirectionResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,5 +67,26 @@ public class AMapClient {
         }catch (Exception e){
         }
         return directionResponse;
+    }
+
+
+    public String initDicDistrict(String keywords) {
+        //https://restapi.amap.com/v3/config/district?
+        // keywords=北京&subdistrict=2&key=ba81aa920fc583b0c5e5180c82bba1bc
+        //拼装URL
+        StringBuilder url = new StringBuilder();
+        url.append(AMapConstants.AMAP_DISTRICT_URL);
+        url.append("?");
+        url.append("keywords="+keywords);
+        url.append("&");
+        url.append("subdistrict=3");
+        url.append("&");
+        url.append("key=" + amapKey);
+
+        //请求结果
+        ResponseEntity<String> forEntity = restTemplate.getForEntity(url.toString(), String.class);
+
+        return forEntity.getBody();
+
     }
 }
