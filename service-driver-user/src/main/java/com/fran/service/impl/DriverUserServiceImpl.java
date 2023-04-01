@@ -1,8 +1,9 @@
-package com.fran.service;
+package com.fran.service.impl;
 
 import com.fran.dto.CommonResult;
 import com.fran.mapper.DriverUserMapper;
 import com.fran.pojo.DriverUser;
+import com.fran.service.DriverUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -11,7 +12,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Service
-public class DriverUserServiceImpl implements DriverUserService{
+public class DriverUserServiceImpl implements DriverUserService {
     @Autowired
     private DriverUserMapper driverUserMapper;
 

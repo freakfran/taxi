@@ -2,7 +2,7 @@ package com.fran.controller;
 
 import com.fran.dto.CommonResult;
 import com.fran.pojo.DriverUser;
-import com.fran.service.DriverUserServiceImpl;
+import com.fran.service.impl.DriverUserServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
