@@ -23,4 +23,11 @@ public class DriverUserServiceImpl implements DriverUserService{
         return CommonResult.success();
     }
 
+    @Override
+    public CommonResult updateDriver(DriverUser driverUser) {
+        driverUser.setGmtModified(LocalDateTime.now());
+        int update = driverUserMapper.updateById(driverUser);
+        return CommonResult.success();
+    }
+
 }
