@@ -7,4 +7,5 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface DriverUserService {
     public CommonResult addDriver(DriverUser driverUser);
     public CommonResult updateDriver(DriverUser driverUser);
+    public CommonResult<DriverUser> getDriverByPhone(String driverPhone);
 }
