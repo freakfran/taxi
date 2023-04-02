@@ -37,7 +37,7 @@ public class VerificationCodeServiceImpl implements VerificationCodeService{
         System.out.println("numbercode="+numberCode);
 
         //验证码存入redis key,value,ttl
-        String key = RedisKeyUtils.generateKeyByPhone(passengerPhone);
+        String key = RedisKeyUtils.generateKeyByPhone(passengerPhone,IdentityConstants.IDENTITY_PASSENGER);
         String value = String.valueOf(numberCode);
         stringRedisTemplate.opsForValue().set(key,value,2, TimeUnit.MINUTES);
         System.out.println("验证码存入redis");
@@ -50,7 +50,7 @@ public class VerificationCodeServiceImpl implements VerificationCodeService{
     @Override
     public CommonResult checkCode(String passengerPhone, String verificationCode) {
         //根据手机号，从redis读取验证码
-        String key = RedisKeyUtils.generateKeyByPhone(passengerPhone);
+        String key = RedisKeyUtils.generateKeyByPhone(passengerPhone,IdentityConstants.IDENTITY_PASSENGER);
         String codeRedis = stringRedisTemplate.opsForValue().get(key);
         //校验验证码
         if(StringUtils.isBlank(codeRedis)||!(verificationCode.trim().equals(codeRedis.trim()))){

@@ -27,7 +27,7 @@ public class DriverUserController {
     }
 
     @GetMapping("/check_driver/{driverPhone}")
-    public CommonResult getDriver(@PathVariable("driverPhone")String driverPhone){
+    public CommonResult<DriverUserExistsResponse> getDriver(@PathVariable("driverPhone")String driverPhone){
         CommonResult<DriverUser> driverByPhone = driverUserService.getDriverByPhone(driverPhone);
         DriverUser data = driverByPhone.getData();
         int isExists = 1;

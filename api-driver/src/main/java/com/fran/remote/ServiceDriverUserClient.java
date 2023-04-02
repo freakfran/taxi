@@ -2,11 +2,10 @@ package com.fran.remote;
 
 import com.fran.dto.CommonResult;
 import com.fran.pojo.DriverUser;
+import com.fran.response.DriverUserExistsResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 @FeignClient("service-driver-user")
 @Service
@@ -17,4 +16,7 @@ public interface ServiceDriverUserClient {
 
     @PutMapping("/user")
     public CommonResult updateDriver(@RequestBody DriverUser driverUser);
+
+    @GetMapping("/check_driver/{driverPhone}")
+    public CommonResult<DriverUserExistsResponse> checkDriver(@PathVariable("driverPhone")String driverPhone);
 }
