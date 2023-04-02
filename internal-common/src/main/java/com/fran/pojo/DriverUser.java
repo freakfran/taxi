@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.Date;
 @Data
 public class DriverUser {
-    private Integer id;
+    private Long id;
     private String address;
     private String driverName;
     private String driverPhone;

@@ -4,7 +4,9 @@ import com.fran.constant.CommonStatusEnum;
 import com.fran.constant.DriverCarConstants;
 import com.fran.dto.CommonResult;
 import com.fran.mapper.DriverUserMapper;
+import com.fran.mapper.DriverUserWorkStatusMapper;
 import com.fran.pojo.DriverUser;
+import com.fran.pojo.DriverUserWorkStatus;
 import com.fran.service.DriverUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,12 +22,21 @@ import java.util.Map;
 public class DriverUserServiceImpl implements DriverUserService {
     @Autowired
     private DriverUserMapper driverUserMapper;
+    @Autowired
+    private DriverUserWorkStatusMapper driverUserWorkStatusMapper;
 
     public CommonResult addDriver(DriverUser driverUser){
         driverUser.setGmtCreate(LocalDateTime.now());
         driverUser.setGmtModified(LocalDateTime.now());
         driverUserMapper.insert(driverUser);
 
+        //初始化司机工作状态表
+        DriverUserWorkStatus driverUserWorkStatus = new DriverUserWorkStatus();
+        driverUserWorkStatus.setDriverId(driverUser.getId());
+        driverUserWorkStatus.setWorkStatus(DriverCarConstants.DRIVER_WORK_STATUS_STOP);
+        driverUserWorkStatus.setGmtCreate(LocalDateTime.now());
+        driverUserWorkStatus.setGmtModified(LocalDateTime.now());
+        driverUserWorkStatusMapper.insert(driverUserWorkStatus);
         return CommonResult.success();
     }
 
