@@ -12,7 +12,7 @@ public class TerminalServiceImpl implements TerminalService{
     private TerminalClient terminalClient;
 
     @Override
-    public CommonResult<TerminalResponse> add(String name) {
-        return terminalClient.add(name);
+    public CommonResult<TerminalResponse> add(String name,String desc) {
+        return terminalClient.add(name,desc);
     }
 }

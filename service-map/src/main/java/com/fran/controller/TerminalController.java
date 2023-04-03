@@ -15,8 +15,8 @@ public class TerminalController {
     private TerminalServiceImpl terminalService;
 
     @PostMapping("/add")
-    public CommonResult<TerminalResponse> add(String name){
+    public CommonResult<TerminalResponse> add(String name,String desc){
 
-        return terminalService.add(name);
+        return terminalService.add(name,desc);
     }
 }

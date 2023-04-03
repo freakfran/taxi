@@ -4,5 +4,5 @@ import com.fran.dto.CommonResult;
 
 public interface TerminalService {
 
-    public CommonResult add(String name);
+    public CommonResult add(String name,String desc);
 }

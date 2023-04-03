@@ -24,7 +24,7 @@ public class TerminalClient {
     @Autowired
     private RestTemplate restTemplate;
 
-    public CommonResult<TerminalResponse> add(String name){
+    public CommonResult<TerminalResponse> add(String name,String desc){
         //拼接url
         //https://tsapi.amap.com/v1/track/terminal/add
         StringBuilder url = new StringBuilder();
@@ -33,6 +33,7 @@ public class TerminalClient {
         url.append("key=" + amapKey);
         url.append("&sid=" + sid);
         url.append("&name=" + name);
+        url.append("&desc=" + desc);
         log.info(url.toString());
 
         ResponseEntity<String> entity = restTemplate.postForEntity(url.toString(), null, String.class);
