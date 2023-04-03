@@ -17,7 +17,8 @@ public enum CommonStatusEnum {
     DRIVER_CAR_BIND_NOT_EXISTS(1501,"绑定关系不存在"),
     DRIVER_BIND_EXISTS(1502,"司机已被绑定"),
     CAR_BIND_EXISTS(1503,"车辆已被绑定"),
-    DRIVER_NOT_EXISTS(1504,"司机不存在");
+    DRIVER_NOT_EXISTS(1504,"司机不存在"),
+    SERVICE_EXISTS(1600,"服务已存在");
 
     @Getter
     private int code;
