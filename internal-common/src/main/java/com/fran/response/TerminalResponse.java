@@ -4,5 +4,6 @@ import lombok.Data;
 
 @Data
 public class TerminalResponse {
-    private Integer tid;
+    private Long tid;
+    private String carId;
 }

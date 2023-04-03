@@ -1,6 +1,7 @@
 package com.fran.remote;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.fran.constant.AMapConstants;
 import com.fran.dto.CommonResult;
@@ -17,7 +18,9 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -48,7 +51,13 @@ public class PointClient {
 
         ResponseEntity<String> entity = restTemplate.postForEntity(url.toString(),map, String.class);
         String body = entity.getBody();
-        System.out.println(body);
+        //System.out.println(body);
+        JSONObject jsonObject = JSON.parseObject(body);
+        JSONObject data = jsonObject.getJSONObject("data");
+        if(data==null){
+            return CommonResult.fail(jsonObject.getInteger("errcode"),jsonObject.getString("errmsg"));
+        }
+
 
         return CommonResult.success();
     }

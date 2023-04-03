@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient("service-map")
 public interface ServiceMapClient {
     @PostMapping("/terminal/add")
-    public CommonResult<TerminalResponse> addTerminal(@RequestParam("name") String name);
+    public CommonResult<TerminalResponse> addTerminal(@RequestParam("name") String name,@RequestParam("desc")String desc);
 
     @PostMapping("/track/add")
     public CommonResult<TrackResponse> addTrack(@RequestParam("tid")Integer tid);

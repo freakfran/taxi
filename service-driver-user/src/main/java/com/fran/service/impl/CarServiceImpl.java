@@ -34,9 +34,9 @@ public class CarServiceImpl implements CarService {
     public CommonResult addCar(Car car) {
         car.setGmtCreate(LocalDateTime.now());
         car.setGmtModified(LocalDateTime.now());
+        carMapper.insert(car);
         
-        
-        CommonResult<TerminalResponse> result = serviceMapClient.addTerminal(car.getVehicleNo());
+        CommonResult<TerminalResponse> result = serviceMapClient.addTerminal(car.getVehicleNo(),car.getId()+"");
         Integer tid = result.getData().getTid();
 
         CommonResult<TrackResponse> trackResponse = serviceMapClient.addTrack(tid);
@@ -47,7 +47,7 @@ public class CarServiceImpl implements CarService {
         car.setTrname(trname);
         car.setTid(tid);
         log.info(car.toString());
-        carMapper.insert(car);
+        carMapper.updateById(car);
         return CommonResult.success();
     }
 
