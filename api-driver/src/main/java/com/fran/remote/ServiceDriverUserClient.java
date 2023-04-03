@@ -1,6 +1,7 @@
 package com.fran.remote;
 
 import com.fran.dto.CommonResult;
+import com.fran.pojo.Car;
 import com.fran.pojo.DriverUser;
 import com.fran.response.DriverUserExistsResponse;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -16,6 +17,9 @@ public interface ServiceDriverUserClient {
 
     @PutMapping("/user")
     public CommonResult updateDriver(@RequestBody DriverUser driverUser);
+
+    @GetMapping("/car")
+    public CommonResult<Car> getCarById(@RequestParam("carId") Long carId);
 
     @GetMapping("/check_driver/{driverPhone}")
     public CommonResult<DriverUserExistsResponse> checkDriver(@PathVariable("driverPhone")String driverPhone);

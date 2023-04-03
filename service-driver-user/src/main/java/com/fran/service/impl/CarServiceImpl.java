@@ -50,4 +50,10 @@ public class CarServiceImpl implements CarService {
         carMapper.insert(car);
         return CommonResult.success();
     }
+
+    @Override
+    public CommonResult<Car> getCarById(Long carId) {
+        Car car = carMapper.selectById(carId);
+        return CommonResult.success(car);
+    }
 }
