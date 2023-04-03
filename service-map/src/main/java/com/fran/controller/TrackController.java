@@ -14,7 +14,7 @@ public class TrackController {
     @Autowired
     private TrackServiceImpl trackService;
 
-    @PostMapping("add")
+    @PostMapping("/add")
     public CommonResult<TrackResponse> add(Integer tid){
         return trackService.add(tid);
     }

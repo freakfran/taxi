@@ -5,6 +5,7 @@ import com.fran.pojo.Car;
 import com.fran.mapper.CarMapper;
 import com.fran.remote.ServiceMapClient;
 import com.fran.response.TerminalResponse;
+import com.fran.response.TrackResponse;
 import com.fran.service.CarService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -33,9 +34,17 @@ public class CarServiceImpl implements CarService {
     public CommonResult addCar(Car car) {
         car.setGmtCreate(LocalDateTime.now());
         car.setGmtModified(LocalDateTime.now());
-        CommonResult<TerminalResponse> result = serviceMapClient.add(car.getVehicleNo());
-        log.info(result.getMessage());
+        
+        
+        CommonResult<TerminalResponse> result = serviceMapClient.addTerminal(car.getVehicleNo());
         Integer tid = result.getData().getTid();
+
+        CommonResult<TrackResponse> trackResponse = serviceMapClient.addTrack(tid);
+        Integer trid = trackResponse.getData().getTrid();
+        String trname = trackResponse.getData().getTrname();
+
+        car.setTrid(trid);
+        car.setTrname(trname);
         car.setTid(tid);
         log.info(car.toString());
         carMapper.insert(car);
