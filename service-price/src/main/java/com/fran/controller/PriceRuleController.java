@@ -1,8 +1,8 @@
 package com.fran.controller;
 
 import com.fran.dto.CommonResult;
-import com.fran.request.OrderRequest;
-import com.fran.service.OrderServiceImpl;
+import com.fran.pojo.PriceRule;
+import com.fran.service.PriceRuleServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,13 +10,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/order")
-public class OrderController {
+@RequestMapping("/price_rule")
+public class PriceRuleController {
     @Autowired
-    private OrderServiceImpl orderService;
+    private PriceRuleServiceImpl priceRuleService;
 
     @PostMapping("/add")
-    public CommonResult add(@RequestBody OrderRequest orderRequest){
-        return orderService.add(orderRequest);
+    public CommonResult add(@RequestBody PriceRule priceRule){
+        return priceRuleService.add(priceRule);
     }
+
 }
