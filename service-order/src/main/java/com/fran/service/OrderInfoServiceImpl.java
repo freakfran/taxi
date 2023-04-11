@@ -46,24 +46,10 @@ public class OrderInfoServiceImpl implements OrderInfoService {
 
         //下单的设备是黑名单设备，不允许下单
         String deviceCode = orderRequest.getDeviceCode();
-        String key = RedisKeyUtils.generateblackDeviceCodeKey(deviceCode);
-        //错误，时间和设置值不能分开写
-//        Long increment = redisTemplate.opsForValue().increment(key);
-//        redisTemplate.expire(key,1, TimeUnit.HOURS);
-        Boolean hasKey = redisTemplate.hasKey(key);
-        if(hasKey){
-            String code = redisTemplate.opsForValue().get(key);
-            int i = Integer.parseInt(code);
-            if(i >= 2){
-                //设备超过下单次数
-                return CommonResult.fail(CommonStatusEnum.DEVICE_IS_BLACK.getCode(),CommonStatusEnum.DEVICE_IS_BLACK.getMessage());
-            }else {
-                redisTemplate.opsForValue().increment(key);
-            }
-        }else {
-            redisTemplate.opsForValue().setIfAbsent(key,"1",1,TimeUnit.HOURS);
+        boolean isBlack = isBlack(deviceCode);
+        if(isBlack){
+            return CommonResult.fail(CommonStatusEnum.DEVICE_IS_BLACK.getCode(),CommonStatusEnum.DEVICE_IS_BLACK.getMessage());
         }
-
 
 
         //创建订单
@@ -92,5 +78,26 @@ public class OrderInfoServiceImpl implements OrderInfoService {
                 .or().eq("order_status",OrderConstants.TO_START_PAY)
         );
         return orderInfoMapper.selectCount(queryWrapper);
+    }
+
+    private boolean isBlack(String deviceCode){
+        String key = RedisKeyUtils.generateblackDeviceCodeKey(deviceCode);
+        //错误，时间和设置值不能分开写
+        //Long increment = redisTemplate.opsForValue().increment(key);
+        //redisTemplate.expire(key,1, TimeUnit.HOURS);
+        Boolean hasKey = redisTemplate.hasKey(key);
+        if(hasKey){
+            String code = redisTemplate.opsForValue().get(key);
+            int i = Integer.parseInt(code);
+            if(i >= 2){
+                //设备超过下单次数
+                return true;
+            }else {
+                redisTemplate.opsForValue().increment(key);
+            }
+        }else {
+            redisTemplate.opsForValue().setIfAbsent(key,"1",1,TimeUnit.HOURS);
+        }
+        return false;
     }
 }
