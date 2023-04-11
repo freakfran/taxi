@@ -31,17 +31,7 @@ public class OrderInfoServiceImpl implements OrderInfoService {
             return CommonResult.fail(CommonStatusEnum.PRICE_RULE_CHANGED.getCode(),CommonStatusEnum.PRICE_RULE_CHANGED.getMessage());
         }
         //有正在进行的订单，不允许下单
-        QueryWrapper<OrderInfo> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("passenger_id",orderRequest.getPassengerId());
-        queryWrapper.and(wrapper -> wrapper.eq("order_status",OrderConstants.ORDER_START)
-                .or().eq("order_status",OrderConstants.DRIVER_RECEIVE_ORDER)
-                .or().eq("order_status",OrderConstants.DRIVER_TO_PICK_UP_PASSENGER)
-                .or().eq("order_status",OrderConstants.DRIVER_ARRIVED_DEPARTURE)
-                .or().eq("order_status",OrderConstants.PICK_UP_PASSENGER)
-                .or().eq("order_status",OrderConstants.PASSENGER_GET_OFF)
-                .or().eq("order_status",OrderConstants.TO_START_PAY)
-        );
-        Long count = orderInfoMapper.selectCount(queryWrapper);
+        Long count = countOrderGoingOn(orderRequest.getPassengerId());
         if(count > 0){
             return CommonResult.fail(CommonStatusEnum.ORDER_GOING_ON.getCode(),CommonStatusEnum.ORDER_GOING_ON.getMessage());
         }
@@ -58,5 +48,19 @@ public class OrderInfoServiceImpl implements OrderInfoService {
         orderInfoMapper.insert(orderInfo);
         log.info(orderInfo.toString());
         return CommonResult.success();
+    }
+
+    private Long countOrderGoingOn(Long passengerId){
+        QueryWrapper<OrderInfo> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("passenger_id",passengerId);
+        queryWrapper.and(wrapper -> wrapper.eq("order_status",OrderConstants.ORDER_START)
+                .or().eq("order_status",OrderConstants.DRIVER_RECEIVE_ORDER)
+                .or().eq("order_status",OrderConstants.DRIVER_TO_PICK_UP_PASSENGER)
+                .or().eq("order_status",OrderConstants.DRIVER_ARRIVED_DEPARTURE)
+                .or().eq("order_status",OrderConstants.PICK_UP_PASSENGER)
+                .or().eq("order_status",OrderConstants.PASSENGER_GET_OFF)
+                .or().eq("order_status",OrderConstants.TO_START_PAY)
+        );
+        return orderInfoMapper.selectCount(queryWrapper);
     }
 }
