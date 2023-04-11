@@ -14,7 +14,7 @@ public class ForecastPriceServiceImpl implements ForeCastPriceService{
     @Autowired
     private ServicePriceClient servicePriceClient;
     @Override
-    public CommonResult forecastPrice(String depLongitude,String depLatitude,String destLongitude,String destLatitude) {
+    public CommonResult forecastPrice(String depLongitude,String depLatitude,String destLongitude,String destLatitude,String cityCode,String vehicleType) {
         log.info("出发地经度：" + depLongitude);
         log.info("出发地纬度：" + depLatitude);
         log.info("目的地经度：" + destLongitude);
@@ -26,6 +26,8 @@ public class ForecastPriceServiceImpl implements ForeCastPriceService{
         forecastPriceDto.setDepLatitude(depLatitude);
         forecastPriceDto.setDestLongitude(destLongitude);
         forecastPriceDto.setDestLatitude(destLatitude);
+        forecastPriceDto.setCityCode(cityCode);
+        forecastPriceDto.setVehicleType(vehicleType);
 
         return servicePriceClient.forecastPrice(forecastPriceDto);
     }

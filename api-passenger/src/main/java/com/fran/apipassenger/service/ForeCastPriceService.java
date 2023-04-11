@@ -6,5 +6,5 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 public interface ForeCastPriceService {
 
-    public CommonResult forecastPrice(String depLongitude,String depLatitude,String destLongitude,String destLatitude);
+    public CommonResult forecastPrice(String depLongitude,String depLatitude,String destLongitude,String destLatitude,String cityCode,String vehicleType);
 }
