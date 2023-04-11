@@ -1,6 +1,7 @@
 package com.fran.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.fran.constant.CommonStatusEnum;
 import com.fran.dto.CommonResult;
 import com.fran.mapper.PriceRuleMapper;
 import com.fran.pojo.PriceRule;
@@ -16,9 +17,11 @@ public class PriceRuleServiceImpl implements PriceRuleService{
     @Autowired
     private PriceRuleMapper priceRuleMapper;
 
+
+
     @Override
     public CommonResult add(PriceRule priceRule) {
-        String fareType = priceRule.getCityCode() + priceRule.getVehicleType();
+        String fareType = priceRule.getCityCode() + "$" + priceRule.getVehicleType();
         priceRule.setFareType(fareType);
 
         QueryWrapper<PriceRule> queryWrapper = new QueryWrapper<>();
@@ -29,7 +32,39 @@ public class PriceRuleServiceImpl implements PriceRuleService{
         int version = 0;
         //找最大的版本号
         if(!priceRules.isEmpty()){
-            version = priceRules.get(0).getFareVersion() + 1;
+            return CommonResult.fail(CommonStatusEnum.PRICE_RULE_EXISTS.getCode(),CommonStatusEnum.PRICE_RULE_EXISTS.getMessage());
+        }
+        priceRule.setFareVersion(++version);
+
+        priceRuleMapper.insert(priceRule);
+        return CommonResult.success();
+    }
+
+    @Override
+    public CommonResult edit(PriceRule priceRule) {
+        String fareType = priceRule.getCityCode() + "$" + priceRule.getVehicleType();
+        priceRule.setFareType(fareType);
+
+        QueryWrapper<PriceRule> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("city_code",priceRule.getCityCode());
+        queryWrapper.eq("vehicle_type",priceRule.getVehicleType());
+        queryWrapper.orderByDesc("fare_version");
+        List<PriceRule> priceRules = priceRuleMapper.selectList(queryWrapper);
+        int version = 0;
+        //找最大的版本号
+        if(!priceRules.isEmpty()){
+            PriceRule lastPriceRule = priceRules.get(0);
+            Double unitPricePerMile = lastPriceRule.getUnitPricePerMile();
+            Double unitPricePerMinute = lastPriceRule.getUnitPricePerMinute();
+            Double startFare = lastPriceRule.getStartFare();
+            Integer startMile = lastPriceRule.getStartMile();
+            if(unitPricePerMile.doubleValue() == priceRule.getUnitPricePerMile()
+            && unitPricePerMinute.doubleValue() == priceRule.getUnitPricePerMinute()
+            &&startFare.doubleValue() == priceRule.getStartFare()
+            &&startMile.doubleValue() == priceRule.getStartMile()){
+                return CommonResult.fail(CommonStatusEnum.PRICE_RULE_EXISTS.getCode(),CommonStatusEnum.PRICE_RULE_EXISTS.getMessage());
+            }
+            version = lastPriceRule.getFareVersion()+1;
         }
         priceRule.setFareVersion(version);
 

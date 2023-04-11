@@ -6,4 +6,5 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 public interface PriceRuleService {
     public CommonResult add(PriceRule priceRule);
+    public CommonResult edit(PriceRule priceRule);
 }
