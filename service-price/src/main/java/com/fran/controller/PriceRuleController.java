@@ -4,10 +4,7 @@ import com.fran.dto.CommonResult;
 import com.fran.pojo.PriceRule;
 import com.fran.service.PriceRuleServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/price_rule")
@@ -23,6 +20,16 @@ public class PriceRuleController {
     @PostMapping("/edit")
     public CommonResult edit(@RequestBody PriceRule priceRule){
         return priceRuleService.edit(priceRule);
+    }
+
+    @GetMapping("/getLatestVersion")
+    public CommonResult<PriceRule> getLatest(@RequestParam String fareType){
+        return priceRuleService.getLatest(fareType);
+    }
+
+    @GetMapping("/isLatest")
+    public CommonResult<Boolean> isLatest(@RequestParam String fareType,@RequestParam Integer fareVersion){
+        return priceRuleService.isLatest(fareType,fareVersion);
     }
 
 }

@@ -13,6 +13,7 @@ public enum CommonStatusEnum {
     USER_NOT_EXIST(1200,"当前用户不存在"),
     PRICE_RULE_EMPTY(1300,"计价规则不存在"),
     PRICE_RULE_EXISTS(1301,"计价规则已存在"),
+    PRICE_RULE_CHANGED(1302,"计价规则有变化"),
     MAP_DISTRICT_ERROR(1400,"请求地图错误"),
     DRIVER_CAR_BIND_EXISTS(1500,"绑定关系已存在"),
     DRIVER_CAR_BIND_NOT_EXISTS(1501,"绑定关系不存在"),

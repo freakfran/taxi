@@ -71,4 +71,29 @@ public class PriceRuleServiceImpl implements PriceRuleService{
         priceRuleMapper.insert(priceRule);
         return CommonResult.success();
     }
+
+    @Override
+    public CommonResult<PriceRule> getLatest(String fareType) {
+        QueryWrapper<PriceRule> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("fare_type",fareType);
+        queryWrapper.orderByDesc("fare_version");
+        List<PriceRule> priceRules = priceRuleMapper.selectList(queryWrapper);
+        if(priceRules.isEmpty()){
+            return CommonResult.fail(CommonStatusEnum.PRICE_RULE_EMPTY.getCode(),CommonStatusEnum.PRICE_RULE_EMPTY.getMessage());
+        }
+        return CommonResult.success(priceRules.get(0));
+    }
+
+    @Override
+    public CommonResult<Boolean> isLatest(String fareType, Integer fareVersion) {
+        CommonResult<PriceRule> latest = getLatest(fareType);
+        if(latest.getCode() == CommonStatusEnum.PRICE_RULE_EMPTY.getCode()){
+            return CommonResult.fail(CommonStatusEnum.PRICE_RULE_EMPTY.getCode(),CommonStatusEnum.PRICE_RULE_EMPTY.getMessage());
+        }
+        Integer fareVersionDB = latest.getData().getFareVersion();
+        if(fareVersionDB > fareVersion){
+            return CommonResult.success(false);
+        }
+        return CommonResult.success(true);
+    }
 }
