@@ -1,5 +1,6 @@
 package com.fran.controller;
 
+import com.fran.constant.HeaderConstants;
 import com.fran.dto.CommonResult;
 import com.fran.request.OrderRequest;
 import com.fran.service.OrderInfoServiceImpl;
@@ -9,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+
 @RestController
 @RequestMapping("/order")
 public class OrderInfoController {
@@ -17,6 +20,8 @@ public class OrderInfoController {
 
     @PostMapping("/add")
     public CommonResult add(@RequestBody OrderRequest orderRequest){
+//        String deviceCode = request.getHeader(HeaderConstants.DEVICE_CODE);
+//        orderRequest.setDeviceCode(deviceCode);
         return orderService.add(orderRequest);
     }
 }
