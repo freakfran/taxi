@@ -32,4 +32,9 @@ public class PriceRuleController {
         return priceRuleService.isLatest(fareType,fareVersion);
     }
 
+    @GetMapping("/is_exists")
+    public CommonResult<Boolean> isExists(@RequestBody PriceRule priceRule){
+        return priceRuleService.isExists(priceRule);
+    }
+
 }
