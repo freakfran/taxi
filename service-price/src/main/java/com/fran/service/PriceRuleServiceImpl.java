@@ -88,7 +88,8 @@ public class PriceRuleServiceImpl implements PriceRuleService{
     public CommonResult<Boolean> isLatest(String fareType, Integer fareVersion) {
         CommonResult<PriceRule> latest = getLatest(fareType);
         if(latest.getCode() == CommonStatusEnum.PRICE_RULE_EMPTY.getCode()){
-            return CommonResult.fail(CommonStatusEnum.PRICE_RULE_EMPTY.getCode(),CommonStatusEnum.PRICE_RULE_EMPTY.getMessage());
+            return CommonResult.success(false);
+            //return CommonResult.fail(CommonStatusEnum.PRICE_RULE_EMPTY.getCode(),CommonStatusEnum.PRICE_RULE_EMPTY.getMessage());
         }
         Integer fareVersionDB = latest.getData().getFareVersion();
         if(fareVersionDB > fareVersion){

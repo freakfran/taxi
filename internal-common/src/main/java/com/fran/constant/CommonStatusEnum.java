@@ -22,8 +22,10 @@ public enum CommonStatusEnum {
     DRIVER_NOT_EXISTS(1504,"司机不存在"),
     SERVICE_EXISTS(1600,"服务已存在"),
     TERMINAL_EXISTS(1601,"终端已存在"),
-    ORDER_GOING_ON(1700,"有进行中的订单"),
-    DEVICE_IS_BLACK(1800,"超过下单次数");
+    ORDER_GOING_ON(1701,"有进行中的订单"),
+    DEVICE_IS_BLACK(1702,"超过下单次数"),
+    CITY_SERVICE_NOT_EXISTS(1703,"当前城市未开通服务"),
+    CITY_DRIVER_EMPTY(1704,"当前城市无可用司机");
 
 
     @Getter

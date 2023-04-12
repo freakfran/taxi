@@ -37,7 +37,7 @@ public class CarServiceImpl implements CarService {
         carMapper.insert(car);
         
         CommonResult<TerminalResponse> result = serviceMapClient.addTerminal(car.getVehicleNo(),car.getId()+"");
-        Integer tid = result.getData().getTid();
+        Long tid = result.getData().getTid();
 
         CommonResult<TrackResponse> trackResponse = serviceMapClient.addTrack(tid);
         Integer trid = trackResponse.getData().getTrid();

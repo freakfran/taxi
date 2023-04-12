@@ -4,5 +4,5 @@ import com.fran.dto.CommonResult;
 import com.fran.response.TrackResponse;
 
 public interface TrackService {
-    public CommonResult<TrackResponse> add(Integer tid);
+    public CommonResult<TrackResponse> add(Long tid);
 }

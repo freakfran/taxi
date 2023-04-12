@@ -13,5 +13,5 @@ public interface ServiceMapClient {
     public CommonResult<TerminalResponse> addTerminal(@RequestParam("name") String name,@RequestParam("desc")String desc);
 
     @PostMapping("/track/add")
-    public CommonResult<TrackResponse> addTrack(@RequestParam("tid")Integer tid);
+    public CommonResult<TrackResponse> addTrack(@RequestParam("tid")Long tid);
 }

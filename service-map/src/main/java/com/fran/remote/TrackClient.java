@@ -23,7 +23,7 @@ public class TrackClient {
     @Autowired
     private RestTemplate restTemplate;
 
-    public CommonResult<TrackResponse> add(Integer tid){
+    public CommonResult<TrackResponse> add(Long tid){
         //拼接url
         //https://tsapi.amap.com/v1/track/trace/add
         StringBuilder url = new StringBuilder();

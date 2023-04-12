@@ -1,8 +1,10 @@
 package com.fran.controller;
 
 import com.fran.dto.CommonResult;
+import com.fran.mapper.DriverUserMapper;
 import com.fran.pojo.DriverUser;
 import com.fran.response.DriverUserExistsResponse;
+import com.fran.service.impl.CityDriverUserServiceImpl;
 import com.fran.service.impl.DriverUserServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 public class DriverUserController {
     @Autowired
     private DriverUserServiceImpl driverUserService;
+
 
     //新增
     @PostMapping("/user")
@@ -39,4 +42,7 @@ public class DriverUserController {
         driverUserExistsResponse.setIsExists(isExists);
         return CommonResult.success(driverUserExistsResponse);
     }
+
+
+
 }

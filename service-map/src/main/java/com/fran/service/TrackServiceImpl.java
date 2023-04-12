@@ -11,7 +11,7 @@ public class TrackServiceImpl implements TrackService{
     @Autowired
     private TrackClient trackClient;
 
-    public CommonResult<TrackResponse> add(Integer tid){
+    public CommonResult<TrackResponse> add(Long tid){
 
         return trackClient.add(tid);
     }

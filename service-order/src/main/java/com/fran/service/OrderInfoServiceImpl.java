@@ -6,6 +6,8 @@ import com.fran.constant.OrderConstants;
 import com.fran.dto.CommonResult;
 import com.fran.mapper.OrderInfoMapper;
 import com.fran.pojo.OrderInfo;
+import com.fran.pojo.PriceRule;
+import com.fran.remote.ServiceDriverUserClient;
 import com.fran.remote.ServicePriceClient;
 import com.fran.request.OrderRequest;
 import com.fran.util.RedisKeyUtils;
@@ -27,9 +29,13 @@ public class OrderInfoServiceImpl implements OrderInfoService {
     @Autowired
     private ServicePriceClient servicePriceClient;
     @Autowired
+    private ServiceDriverUserClient serviceDriverUserClient;
+    @Autowired
     private StringRedisTemplate redisTemplate;
     @Override
     public CommonResult add(OrderRequest orderRequest) {
+        String fareType = orderRequest.getFareType();
+        String[] split = fareType.split("\\$");
         //判断当前订单计价规则是否为最新
         CommonResult<Boolean> isLastest = servicePriceClient.isLatest(orderRequest.getFareType(), orderRequest.getFareVersion());
         if(!isLastest.getData()){
@@ -51,6 +57,17 @@ public class OrderInfoServiceImpl implements OrderInfoService {
             return CommonResult.fail(CommonStatusEnum.DEVICE_IS_BLACK.getCode(),CommonStatusEnum.DEVICE_IS_BLACK.getMessage());
         }
 
+        //判断该城市该车型是否存在
+        boolean isExists = isPriceRuleExists(split[0], split[1]);
+        if(!isExists){
+            return CommonResult.fail(CommonStatusEnum.CITY_SERVICE_NOT_EXISTS.getCode(),CommonStatusEnum.CITY_SERVICE_NOT_EXISTS.getMessage());
+        }
+
+        //判断当前城市是否有司机
+        CommonResult<Boolean> hasAvailableDriver = serviceDriverUserClient.hasAvailableDriver(split[0]);
+        if(!hasAvailableDriver.getData()){
+            return CommonResult.fail(CommonStatusEnum.CITY_DRIVER_EMPTY.getCode(),CommonStatusEnum.CITY_DRIVER_EMPTY.getMessage());
+        }
 
         //创建订单
         OrderInfo orderInfo = new OrderInfo();
@@ -99,5 +116,12 @@ public class OrderInfoServiceImpl implements OrderInfoService {
             redisTemplate.opsForValue().setIfAbsent(key,"1",1,TimeUnit.HOURS);
         }
         return false;
+    }
+
+    private boolean isPriceRuleExists(String cityCode,String vehicleType){
+        PriceRule priceRule = new PriceRule();
+        priceRule.setVehicleType(vehicleType);
+        priceRule.setCityCode(cityCode);
+        return servicePriceClient.isExists(priceRule).getData();
     }
 }
