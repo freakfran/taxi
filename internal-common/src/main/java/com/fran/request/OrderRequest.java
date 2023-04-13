@@ -1,17 +1,19 @@
 package com.fran.request;
 
 import lombok.Data;
+import lombok.ToString;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
+@ToString
 public class OrderRequest {
     private Long passengerId;
     private String passengerPhone;
     private String address;
-    private String deLatitude;
-    private String deLongitude;
+    private String depLatitude;
+    private String depLongitude;
     private LocalDateTime departTime;
     private String departure;
     private String desLatitude;

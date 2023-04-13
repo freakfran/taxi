@@ -4,6 +4,7 @@ import com.fran.dto.CommonResult;
 import com.fran.mapper.DriverUserMapper;
 import com.fran.pojo.DriverUser;
 import com.fran.response.DriverUserExistsResponse;
+import com.fran.response.OrderDriverResponse;
 import com.fran.service.impl.CityDriverUserServiceImpl;
 import com.fran.service.impl.DriverUserServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -43,6 +44,9 @@ public class DriverUserController {
         return CommonResult.success(driverUserExistsResponse);
     }
 
-
+    @GetMapping("/get_available_driver/{carId}")
+    public CommonResult<OrderDriverResponse> getAvailableDriver(@PathVariable("carId")Long carId){
+        return driverUserService.getAvailableDriver(carId);
+    }
 
 }

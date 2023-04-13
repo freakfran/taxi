@@ -47,7 +47,11 @@ public class PointClient {
         map.add("tid",pointRequest.getTid().toString());
         map.add("trid",pointRequest.getTrid().toString());
         map.add("points",points);
-        log.info(url.toString());
+        log.info(url.toString() + "?" + "key=" + amapKey + "&" +
+                "sid=" + sid + "&" +
+                "tid=" + pointRequest.getTid().toString() + "&" +
+                "trid=" + pointRequest.getTrid().toString() +  "&" +
+                "points=" + points);
 
         ResponseEntity<String> entity = restTemplate.postForEntity(url.toString(),map, String.class);
         String body = entity.getBody();

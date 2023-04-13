@@ -1,5 +1,8 @@
 package com.fran.service;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fran.constant.CommonStatusEnum;
 import com.fran.constant.OrderConstants;
@@ -8,8 +11,10 @@ import com.fran.mapper.OrderInfoMapper;
 import com.fran.pojo.OrderInfo;
 import com.fran.pojo.PriceRule;
 import com.fran.remote.ServiceDriverUserClient;
+import com.fran.remote.ServiceMapClient;
 import com.fran.remote.ServicePriceClient;
 import com.fran.request.OrderRequest;
+import com.fran.response.TerminalResponse;
 import com.fran.util.RedisKeyUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -18,6 +23,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -30,6 +36,8 @@ public class OrderInfoServiceImpl implements OrderInfoService {
     private ServicePriceClient servicePriceClient;
     @Autowired
     private ServiceDriverUserClient serviceDriverUserClient;
+    @Autowired
+    private ServiceMapClient serviceMapClient;
     @Autowired
     private StringRedisTemplate redisTemplate;
     @Override
@@ -73,12 +81,19 @@ public class OrderInfoServiceImpl implements OrderInfoService {
         OrderInfo orderInfo = new OrderInfo();
         //从一个实体类把同名的属性copy到另一个
         BeanUtils.copyProperties(orderRequest,orderInfo);
-
+        log.info(orderRequest.toString());
+        log.info(orderInfo.toString());
         orderInfo.setOrderStatus(OrderConstants.ORDER_START);
         orderInfo.setGmtCreate(LocalDateTime.now());
         orderInfo.setGmtModified(LocalDateTime.now());
 
         orderInfoMapper.insert(orderInfo);
+        //派单
+        dispatchRealTimeOrder(orderInfo);
+
+
+
+
         log.info(orderInfo.toString());
         return CommonResult.success();
     }
@@ -106,7 +121,7 @@ public class OrderInfoServiceImpl implements OrderInfoService {
         if(hasKey){
             String code = redisTemplate.opsForValue().get(key);
             int i = Integer.parseInt(code);
-            if(i >= 2){
+            if(i >= 100){
                 //设备超过下单次数
                 return true;
             }else {
@@ -123,5 +138,37 @@ public class OrderInfoServiceImpl implements OrderInfoService {
         priceRule.setVehicleType(vehicleType);
         priceRule.setCityCode(cityCode);
         return servicePriceClient.isExists(priceRule).getData();
+    }
+
+    public CommonResult<List<TerminalResponse>> dispatchRealTimeOrder(OrderInfo orderInfo){
+        String depLongitude = orderInfo.getDepLongitude();
+        String depLatitude = orderInfo.getDepLatitude();
+        String center = depLatitude + "," + depLongitude;
+        CommonResult<List<TerminalResponse>> listCommonResult = new CommonResult<>();
+        List<Integer> radiusList = new ArrayList<>();
+        radiusList.add(2000);
+        radiusList.add(4000);
+        radiusList.add(5000);
+        for(int i = 0;i < radiusList.size();i++){
+            int radius = radiusList.get(i);
+            log.info("第"+(i+1)+"次找车，半径"+radius+"km");
+            //寻找终端
+            listCommonResult = serviceMapClient.aroundSearch(center, radius);
+            List<TerminalResponse> data = listCommonResult.getData();
+            if(!data.isEmpty()){
+                //log.info(listCommonResult.getData().toString());
+                //解析结果[TerminalResponse(tid=667708883, carId=1646346144961314817)]
+                JSONArray carArray = JSONArray.parseArray(JSON.toJSONString(listCommonResult.getData()));
+                for(int j = 0;j < carArray.size();j++){
+                    JSONObject car = carArray.getJSONObject(j);
+                    String s = car.getString("carId");
+                    long carId = Long.parseLong(s);
+                }
+
+                return listCommonResult;
+            }
+            radius+=2000;
+        }
+        return CommonResult.fail(123,"找车失败");
     }
 }
