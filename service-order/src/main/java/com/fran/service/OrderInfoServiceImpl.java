@@ -14,6 +14,7 @@ import com.fran.remote.ServiceDriverUserClient;
 import com.fran.remote.ServiceMapClient;
 import com.fran.remote.ServicePriceClient;
 import com.fran.request.OrderRequest;
+import com.fran.response.OrderDriverResponse;
 import com.fran.response.TerminalResponse;
 import com.fran.util.RedisKeyUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -89,13 +90,13 @@ public class OrderInfoServiceImpl implements OrderInfoService {
 
         orderInfoMapper.insert(orderInfo);
         //派单
-        dispatchRealTimeOrder(orderInfo);
+
 
 
 
 
         log.info(orderInfo.toString());
-        return CommonResult.success();
+        return dispatchRealTimeOrder(orderInfo);
     }
 
     private Long countOrderGoingOn(Long passengerId){
@@ -156,6 +157,7 @@ public class OrderInfoServiceImpl implements OrderInfoService {
             listCommonResult = serviceMapClient.aroundSearch(center, radius);
             List<TerminalResponse> data = listCommonResult.getData();
             if(!data.isEmpty()){
+                //找到附近的车辆，解析它们的id
                 //log.info(listCommonResult.getData().toString());
                 //解析结果[TerminalResponse(tid=667708883, carId=1646346144961314817)]
                 JSONArray carArray = JSONArray.parseArray(JSON.toJSONString(listCommonResult.getData()));
@@ -163,6 +165,12 @@ public class OrderInfoServiceImpl implements OrderInfoService {
                     JSONObject car = carArray.getJSONObject(j);
                     String s = car.getString("carId");
                     long carId = Long.parseLong(s);
+                    //确认该车是否有可用司机
+                    CommonResult<OrderDriverResponse> availableDriver = serviceDriverUserClient.getAvailableDriver(carId);
+                    if(availableDriver.getCode()!=CommonStatusEnum.AVAILABLE_DRIVER_EMPTY.getCode()){
+                        log.info("找到司机:" + availableDriver.getData().getDriverId() + "，车辆ID：" + carId);
+
+                    }
                 }
 
                 return listCommonResult;

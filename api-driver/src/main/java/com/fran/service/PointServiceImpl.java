@@ -23,7 +23,7 @@ public class PointServiceImpl implements PointService{
         Long carId = apiDriverPointRequest.getCarId();
         //通过carId获取triId和tid
         CommonResult<Car> carById = serviceDriverUserClient.getCarById(carId);
-        Integer tid = carById.getData().getTid();
+        Integer tid = Integer.parseInt(String.valueOf(carById.getData().getTid()));
         Integer trid = carById.getData().getTrid();
         //调用地图接口上传
         PointRequest pointRequest = new PointRequest();
