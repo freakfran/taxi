@@ -4,9 +4,11 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fran.constant.CommonStatusEnum;
 import com.fran.constant.DriverCarConstants;
 import com.fran.dto.CommonResult;
+import com.fran.mapper.CarMapper;
 import com.fran.mapper.DriverCarBindingRelationshipMapper;
 import com.fran.mapper.DriverUserMapper;
 import com.fran.mapper.DriverUserWorkStatusMapper;
+import com.fran.pojo.Car;
 import com.fran.pojo.DriverCarBindingRelationship;
 import com.fran.pojo.DriverUser;
 import com.fran.pojo.DriverUserWorkStatus;
@@ -31,6 +33,8 @@ public class DriverUserServiceImpl implements DriverUserService {
     private DriverUserWorkStatusMapper driverUserWorkStatusMapper;
     @Autowired
     private DriverCarBindingRelationshipMapper driverCarBindingRelationshipMapper;
+    @Autowired
+    private CarMapper carMapper;
 
     public CommonResult addDriver(DriverUser driverUser){
         driverUser.setGmtCreate(LocalDateTime.now());
@@ -68,6 +72,7 @@ public class DriverUserServiceImpl implements DriverUserService {
 
     @Override
     public CommonResult<OrderDriverResponse> getAvailableDriver(Long carId) {
+        //绑定关系查询
         QueryWrapper<DriverCarBindingRelationship> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("car_id",carId);
         queryWrapper.eq("binding_state",DriverCarConstants.DRIVER_CAR_BIND);
@@ -76,7 +81,7 @@ public class DriverUserServiceImpl implements DriverUserService {
             return CommonResult.fail(CommonStatusEnum.AVAILABLE_DRIVER_EMPTY.getCode(),CommonStatusEnum.AVAILABLE_DRIVER_EMPTY.getMessage());
         }
         Long driverId = driverCarBindingRelationship.getDriverId();
-
+        //工作状态查询
         QueryWrapper<DriverUserWorkStatus> queryWrapper1 = new QueryWrapper<>();
         queryWrapper1.eq("driver_id",driverId);
         queryWrapper1.eq("work_status",DriverCarConstants.DRIVER_WORK_STATUS_START);
@@ -87,9 +92,17 @@ public class DriverUserServiceImpl implements DriverUserService {
         OrderDriverResponse orderDriverResponse = new OrderDriverResponse();
         orderDriverResponse.setDriverId(driverId);
         orderDriverResponse.setCarId(carId);
+        //司机信息查询
         Map<String,Object> map = new HashMap<>();
         map.put("id",driverId);
-        orderDriverResponse.setDriverPhone(driverUserMapper.selectByMap(map).get(0).getDriverPhone());
+        List<DriverUser> driverUsers = driverUserMapper.selectByMap(map);
+        orderDriverResponse.setDriverPhone(driverUsers.get(0).getDriverPhone());
+        orderDriverResponse.setLicenseId(driverUsers.get(0).getLicenseId());
+        //查询车辆信息
+        map = new HashMap<>();
+        map.put("id",carId);
+        List<Car> cars = carMapper.selectByMap(map);
+        orderDriverResponse.setVehicleNo(cars.get(0).getVehicleNo());
         return CommonResult.success(orderDriverResponse);
     }
 

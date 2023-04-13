@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fran.constant.CommonStatusEnum;
+import com.fran.constant.DriverCarConstants;
 import com.fran.constant.OrderConstants;
 import com.fran.dto.CommonResult;
 import com.fran.mapper.OrderInfoMapper;
@@ -174,6 +175,8 @@ public class OrderInfoServiceImpl implements OrderInfoService {
                 JSONArray carArray = JSONArray.parseArray(JSON.toJSONString(listCommonResult.getData()));
                 for(int j = 0;j < carArray.size();j++){
                     JSONObject car = carArray.getJSONObject(j);
+                    String longitude = car.getString("longitude");
+                    String latitude = car.getString("latitude");
                     String s = car.getString("carId");
                     long carId = Long.parseLong(s);
                     //确认该车是否有出车的司机
@@ -185,6 +188,17 @@ public class OrderInfoServiceImpl implements OrderInfoService {
                         Long driverId = driverData.getDriverId();
                         Long count = countDriverOrderGoingOn(driverId);
                         if(count == 0){
+                            //把订单派给司机
+                            orderInfo.setCarId(carId);
+                            orderInfo.setDriverId(driverId);
+                            orderInfo.setDriverPhone(driverData.getDriverPhone());
+                            orderInfo.setReceiveOrderTime(LocalDateTime.now());
+                            orderInfo.setReceiveOrderCarLongitude(longitude);
+                            orderInfo.setReceiveOrderCarLatitude(latitude);
+                            orderInfo.setLicenseId(driverData.getLicenseId());
+                            orderInfo.setVehicleNo(driverData.getVehicleNo());
+                            orderInfo.setOrderStatus(OrderConstants.DRIVER_RECEIVE_ORDER);
+                            orderInfoMapper.updateById(orderInfo);
                             return listCommonResult;
                         }
                     }
