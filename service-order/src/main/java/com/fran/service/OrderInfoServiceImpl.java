@@ -53,7 +53,7 @@ public class OrderInfoServiceImpl implements OrderInfoService {
 
 
         //有正在进行的订单，不允许下单
-        Long count = countOrderGoingOn(orderRequest.getPassengerId());
+        Long count = countPassengerOrderGoingOn(orderRequest.getPassengerId());
         if(count > 0){
             return CommonResult.fail(CommonStatusEnum.ORDER_GOING_ON.getCode(),CommonStatusEnum.ORDER_GOING_ON.getMessage());
         }
@@ -99,7 +99,7 @@ public class OrderInfoServiceImpl implements OrderInfoService {
         return dispatchRealTimeOrder(orderInfo);
     }
 
-    private Long countOrderGoingOn(Long passengerId){
+    private Long countPassengerOrderGoingOn(Long passengerId){
         QueryWrapper<OrderInfo> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("passenger_id",passengerId);
         queryWrapper.and(wrapper -> wrapper.eq("order_status",OrderConstants.ORDER_START)
@@ -109,6 +109,17 @@ public class OrderInfoServiceImpl implements OrderInfoService {
                 .or().eq("order_status",OrderConstants.PICK_UP_PASSENGER)
                 .or().eq("order_status",OrderConstants.PASSENGER_GET_OFF)
                 .or().eq("order_status",OrderConstants.TO_START_PAY)
+        );
+        return orderInfoMapper.selectCount(queryWrapper);
+    }
+
+    private Long countDriverOrderGoingOn(Long driverId){
+        QueryWrapper<OrderInfo> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("driver_id",driverId);
+        queryWrapper.and(wrapper -> wrapper.eq("order_status",OrderConstants.DRIVER_RECEIVE_ORDER)
+                .or().eq("order_status",OrderConstants.DRIVER_TO_PICK_UP_PASSENGER)
+                .or().eq("order_status",OrderConstants.DRIVER_ARRIVED_DEPARTURE)
+                .or().eq("order_status",OrderConstants.PICK_UP_PASSENGER)
         );
         return orderInfoMapper.selectCount(queryWrapper);
     }
@@ -165,15 +176,19 @@ public class OrderInfoServiceImpl implements OrderInfoService {
                     JSONObject car = carArray.getJSONObject(j);
                     String s = car.getString("carId");
                     long carId = Long.parseLong(s);
-                    //确认该车是否有可用司机
+                    //确认该车是否有出车的司机
                     CommonResult<OrderDriverResponse> availableDriver = serviceDriverUserClient.getAvailableDriver(carId);
                     if(availableDriver.getCode()!=CommonStatusEnum.AVAILABLE_DRIVER_EMPTY.getCode()){
-                        log.info("找到司机:" + availableDriver.getData().getDriverId() + "，车辆ID：" + carId);
-
+                        //log.info("找到司机:" + availableDriver.getData().getDriverId() + "，车辆ID：" + carId);
+                        //确认该司机是否有进行中的订单
+                        OrderDriverResponse driverData = availableDriver.getData();
+                        Long driverId = driverData.getDriverId();
+                        Long count = countDriverOrderGoingOn(driverId);
+                        if(count == 0){
+                            return listCommonResult;
+                        }
                     }
                 }
-
-                return listCommonResult;
             }
             radius+=2000;
         }
