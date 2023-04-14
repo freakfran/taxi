@@ -7,10 +7,7 @@ import com.fran.request.OrderRequest;
 import com.fran.response.TerminalResponse;
 import com.fran.service.OrderInfoServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -33,5 +30,12 @@ public class OrderInfoController {
 //        String deviceCode = request.getHeader(HeaderConstants.DEVICE_CODE);
 //        orderRequest.setDeviceCode(deviceCode);
         return orderService.dispatchRealTimeOrder(orderInfo);
+    }
+
+    @PostMapping("/testDispatch/{orderId}")
+    public CommonResult<List<TerminalResponse>> testDispatch(@PathVariable("orderId")Long orderId){
+//        String deviceCode = request.getHeader(HeaderConstants.DEVICE_CODE);
+//        orderRequest.setDeviceCode(deviceCode);
+        return orderService.testDispatchRealTimeOrder(orderId);
     }
 }

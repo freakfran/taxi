@@ -208,4 +208,66 @@ public class OrderInfoServiceImpl implements OrderInfoService {
         }
         return CommonResult.fail(123,"找车失败");
     }
+
+
+    public CommonResult<List<TerminalResponse>> testDispatchRealTimeOrder(Long orderId){
+        OrderInfo orderInfo = orderInfoMapper.selectById(orderId);
+        String depLongitude = orderInfo.getDepLongitude();
+        String depLatitude = orderInfo.getDepLatitude();
+        String center = depLatitude + "," + depLongitude;
+        CommonResult<List<TerminalResponse>> listCommonResult = new CommonResult<>();
+        List<Integer> radiusList = new ArrayList<>();
+        radiusList.add(2000);
+        radiusList.add(4000);
+        radiusList.add(5000);
+        for(int i = 0;i < radiusList.size();i++){
+            int radius = radiusList.get(i);
+            log.info("第"+(i+1)+"次找车，半径"+radius+"km");
+            //寻找终端
+            listCommonResult = serviceMapClient.aroundSearch(center, radius);
+            List<TerminalResponse> data = listCommonResult.getData();
+            if(!data.isEmpty()){
+                //找到附近的车辆，解析它们的id
+                //log.info(listCommonResult.getData().toString());
+                //解析结果[TerminalResponse(tid=667708883, carId=1646346144961314817)]
+                JSONArray carArray = JSONArray.parseArray(JSON.toJSONString(listCommonResult.getData()));
+                for(int j = 0;j < carArray.size();j++){
+                    JSONObject car = carArray.getJSONObject(j);
+                    String longitude = car.getString("longitude");
+                    String latitude = car.getString("latitude");
+                    String s = car.getString("carId");
+                    long carId = Long.parseLong(s);
+                    //确认该车是否有出车的司机
+                    CommonResult<OrderDriverResponse> availableDriver = serviceDriverUserClient.getAvailableDriver(carId);
+                    if(availableDriver.getCode()!=CommonStatusEnum.AVAILABLE_DRIVER_EMPTY.getCode()){
+                        //log.info("找到司机:" + availableDriver.getData().getDriverId() + "，车辆ID：" + carId);
+                        //确认该司机是否有进行中的订单
+                        OrderDriverResponse driverData = availableDriver.getData();
+                        Long driverId = driverData.getDriverId();
+                        //解决并发问题，一定要用internal
+                        synchronized ((driverId+"").intern()){
+                            Long count = countDriverOrderGoingOn(driverId);
+                            if(count == 0){
+                                //把订单派给司机
+                                orderInfo.setCarId(carId);
+                                orderInfo.setDriverId(driverId);
+                                orderInfo.setDriverPhone(driverData.getDriverPhone());
+                                orderInfo.setReceiveOrderTime(LocalDateTime.now());
+                                orderInfo.setReceiveOrderCarLongitude(longitude);
+                                orderInfo.setReceiveOrderCarLatitude(latitude);
+                                orderInfo.setLicenseId(driverData.getLicenseId());
+                                orderInfo.setVehicleNo(driverData.getVehicleNo());
+                                orderInfo.setOrderStatus(OrderConstants.DRIVER_RECEIVE_ORDER);
+                                orderInfoMapper.updateById(orderInfo);
+                                return listCommonResult;
+                            }
+                        }
+
+                    }
+                }
+            }
+            radius+=2000;
+        }
+        return CommonResult.fail(123,"找车失败");
+    }
 }
