@@ -1,6 +1,7 @@
 package com.fran.controller;
 
 import com.fran.dto.CommonResult;
+import com.fran.pojo.OrderInfo;
 import com.fran.request.OrderRequest;
 import com.fran.response.TerminalResponse;
 import com.fran.service.OrderInfoServiceImpl;
