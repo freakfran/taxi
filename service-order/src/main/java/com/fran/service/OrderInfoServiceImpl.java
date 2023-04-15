@@ -9,6 +9,7 @@ import com.fran.constant.IdentityConstants;
 import com.fran.constant.OrderConstants;
 import com.fran.dto.CommonResult;
 import com.fran.mapper.OrderInfoMapper;
+import com.fran.pojo.Car;
 import com.fran.pojo.OrderInfo;
 import com.fran.pojo.PriceRule;
 import com.fran.remote.ServiceDriverUserClient;
@@ -221,9 +222,26 @@ public class OrderInfoServiceImpl implements OrderInfoService {
                             driverContent.put("depLongitude", orderInfo.getDepLongitude());
                             driverContent.put("depLatitude", orderInfo.getDepLatitude());
                             driverContent.put("destination", orderInfo.getDestination());
-                            driverContent.put("destLongitude()", orderInfo.getDestLongitude());
-                            driverContent.put("destLatitude()", orderInfo.getDestLatitude());
+                            driverContent.put("destLongitude", orderInfo.getDestLongitude());
+                            driverContent.put("destLatitude", orderInfo.getDestLatitude());
                             serviceSsePushClient.push(orderInfo.getDriverId().toString(), IdentityConstants.IDENTITY_DRIVER,driverContent.toJSONString());
+                            //通知乘客
+                            JSONObject passengerContent = new JSONObject();
+                            passengerContent.put("driverId", orderInfo.getDriverId());
+                            passengerContent.put("driverPhone", orderInfo.getDriverPhone());
+                            passengerContent.put("vehicleNo", orderInfo.getVehicleNo());
+                            //车辆信息
+                            CommonResult<Car> carById = serviceDriverUserClient.getCarById(orderInfo.getCarId());
+                            Car taxi = carById.getData();
+                            passengerContent.put("brand", taxi.getBrand());
+                            passengerContent.put("model", taxi.getModel());
+                            passengerContent.put("vehicleColor", taxi.getVehicleColor());
+
+
+
+                            passengerContent.put("receiveOrderCarLongitude", orderInfo.getReceiveOrderCarLongitude());
+                            passengerContent.put("receiveOrderCarLatitude", orderInfo.getReceiveOrderCarLatitude());
+                            serviceSsePushClient.push(orderInfo.getPassengerId().toString(), IdentityConstants.IDENTITY_PASSENGER,passengerContent.toJSONString());
                             return CommonResult.success(carArray.get(i));
                         }
                         lock.unlock();

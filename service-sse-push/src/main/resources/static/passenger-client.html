@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>乘客客户端</title>
+</head>
+<body>
+    <button onclick="setMessageContent('111')">增加按钮</button>
+    <button onclick="sourceClose()">关闭按钮</button>
+    <div id="message">
+        展示服务端推送消息</br>
+    </div>
+    <script>
+        source = null;
+        userId = '50';
+        identity = 1;
+        if(window.EventSource){
+            console.info("此浏览器支持SSE");
+            //建立连接
+            source = new EventSource("http://127.0.0.1:9000/connect?userId=" + userId + "&identity=" + identity);
+            //监听服务端推送的消息
+            source.addEventListener("message",function (e){
+                content = e.data;
+                setMessageContent(content);
+            });
+        }else {
+            setMessageContent("此浏览器不支持SSE");
+        }
+
+
+        function setMessageContent(content){
+            document.getElementById("message").innerHTML+=(content+'</br>')
+        }
+
+        function sourceClose(){
+            //客户端source的关闭
+            source.close();
+            //服务端map移除
+            httpRequest = new XMLHttpRequest();
+            httpRequest.open("get","http://127.0.0.1:9000/close?userId=" + userId + "&identity=" + identity);
+            httpRequest.send();
+        }
+    </script>
+</body>
+</html>

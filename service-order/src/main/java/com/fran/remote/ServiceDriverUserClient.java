@@ -1,6 +1,7 @@
 package com.fran.remote;
 
 import com.fran.dto.CommonResult;
+import com.fran.pojo.Car;
 import com.fran.response.OrderDriverResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,4 +15,7 @@ public interface ServiceDriverUserClient {
 
     @GetMapping("/get_available_driver/{carId}")
     public CommonResult<OrderDriverResponse> getAvailableDriver(@PathVariable("carId")Long carId);
+
+    @GetMapping("/car")
+    public CommonResult<Car> getCarById(@RequestParam("carId")Long carId);
 }
