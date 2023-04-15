@@ -100,11 +100,18 @@ public class OrderInfoServiceImpl implements OrderInfoService {
         orderInfoMapper.insert(orderInfo);
         //派单
 
-
-
-
-
         log.info(orderInfo.toString());
+        for(int i = 0;i < 6;i++){
+            CommonResult<List<TerminalResponse>> listCommonResult = dispatchRealTimeOrder(orderInfo.getId());
+            if(listCommonResult.getCode()==CommonStatusEnum.SUCCESS.getCode()){
+                break;
+            }
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         return dispatchRealTimeOrder(orderInfo.getId());
     }
 
@@ -252,6 +259,6 @@ public class OrderInfoServiceImpl implements OrderInfoService {
             }
             radius+=2000;
         }
-        return CommonResult.fail(123,"找车失败");
+        return CommonResult.fail(CommonStatusEnum.AVAILABLE_DRIVER_EMPTY.getCode(),CommonStatusEnum.AVAILABLE_DRIVER_EMPTY.getMessage());
     }
 }
