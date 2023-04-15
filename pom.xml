@@ -20,6 +20,7 @@
         <module>service-order</module>
         <module>service-order-8901</module>
         <module>service-order-8989</module>
+        <module>sse-driver-client-web</module>
     </modules>
     <packaging>pom</packaging>
 
