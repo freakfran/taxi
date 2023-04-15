@@ -112,7 +112,34 @@ public class OrderInfoServiceImpl implements OrderInfoService {
                 e.printStackTrace();
             }
         }
-        return dispatchRealTimeOrder(orderInfo.getId());
+        return CommonResult.success();
+    }
+
+    @Override
+    public CommonResult toPickUpPassenger(OrderRequest orderRequest) {
+        Long orderId = orderRequest.getOrderId();
+        LocalDateTime toPickUpPassengerTime = orderRequest.getToPickUpPassengerTime();
+        String toPickUpPassengerAddress = orderRequest.getToPickUpPassengerAddress();
+        String toPickUpPassengerLongitude = orderRequest.getToPickUpPassengerLongitude();
+        String toPickUpPassengerLatitude = orderRequest.getToPickUpPassengerLatitude();
+        OrderInfo orderInfo = orderInfoMapper.selectById(orderId);
+        orderInfo.setToPickUpPassengerAddress(toPickUpPassengerAddress);
+        orderInfo.setToPickUpPassengerTime(toPickUpPassengerTime);
+        orderInfo.setToPickUpPassengerLongitude(toPickUpPassengerLongitude);
+        orderInfo.setToPickUpPassengerLatitude(toPickUpPassengerLatitude);
+        orderInfo.setOrderStatus(OrderConstants.DRIVER_TO_PICK_UP_PASSENGER);
+        orderInfoMapper.updateById(orderInfo);
+        return CommonResult.success();
+    }
+
+    @Override
+    public CommonResult arriveDeparture(OrderRequest orderRequest) {
+        Long orderId = orderRequest.getOrderId();
+        OrderInfo orderInfo = orderInfoMapper.selectById(orderId);
+        orderInfo.setOrderStatus(OrderConstants.DRIVER_ARRIVED_DEPARTURE);
+        orderInfo.setDriverArrivedDepartureTime(LocalDateTime.now());
+        orderInfoMapper.updateById(orderInfo);
+        return CommonResult.success();
     }
 
     private Long countPassengerOrderGoingOn(Long passengerId){

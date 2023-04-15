@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @Data
 @ToString
 public class OrderRequest {
+    private Long orderId;
     private Long passengerId;
     private String passengerPhone;
     private String address;
@@ -25,4 +26,24 @@ public class OrderRequest {
     private Integer fareVersion;
     private LocalDateTime orderTime;
     private String deviceCode;
+
+    /**
+     * 司机去接乘客出发时间
+     */
+    private LocalDateTime toPickUpPassengerTime;
+
+    /**
+     * 去接乘客时，司机的经度
+     */
+    private String toPickUpPassengerLongitude;
+
+    /**
+     * 去接乘客时，司机的纬度
+     */
+    private String toPickUpPassengerLatitude;
+
+    /**
+     * 去接乘客时，司机的地点
+     */
+    private String toPickUpPassengerAddress;
 }

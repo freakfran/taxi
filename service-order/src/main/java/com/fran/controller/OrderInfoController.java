@@ -22,6 +22,18 @@ public class OrderInfoController {
         return orderService.add(orderRequest);
     }
 
+    @PostMapping("/to_pick_up_passenger")
+    public CommonResult toPickUpPassenger(@RequestBody OrderRequest orderRequest){
+        return orderService.toPickUpPassenger(orderRequest);
+    }
+
+    @PostMapping("/arrive_departure")
+    public CommonResult arriveDeparture(@RequestBody OrderRequest orderRequest){
+        return orderService.arriveDeparture(orderRequest);
+    }
+
+
+
 
     @PostMapping("/testDispatch/{orderId}")
     public CommonResult<List<TerminalResponse>> testDispatch(@PathVariable("orderId")Long orderId){

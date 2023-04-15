@@ -7,4 +7,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface OrderInfoService {
 
     public CommonResult add(OrderRequest orderRequest);
+
+    public CommonResult toPickUpPassenger(OrderRequest orderRequest);
+
+    public CommonResult arriveDeparture(OrderRequest orderRequest);
 }
