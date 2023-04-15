@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fran.constant.CommonStatusEnum;
+import com.fran.constant.IdentityConstants;
 import com.fran.constant.OrderConstants;
 import com.fran.dto.CommonResult;
 import com.fran.mapper.OrderInfoMapper;
@@ -13,6 +14,7 @@ import com.fran.pojo.PriceRule;
 import com.fran.remote.ServiceDriverUserClient;
 import com.fran.remote.ServiceMapClient;
 import com.fran.remote.ServicePriceClient;
+import com.fran.remote.ServiceSsePushClient;
 import com.fran.request.OrderRequest;
 import com.fran.response.OrderDriverResponse;
 import com.fran.response.TerminalResponse;
@@ -45,6 +47,8 @@ public class OrderInfoServiceImpl implements OrderInfoService {
     private StringRedisTemplate redisTemplate;
     @Autowired
     private RedissonClient redissonClient;
+    @Autowired
+    private ServiceSsePushClient serviceSsePushClient;
     @Override
     public CommonResult add(OrderRequest orderRequest) {
         String fareType = orderRequest.getFareType();
@@ -209,7 +213,18 @@ public class OrderInfoServiceImpl implements OrderInfoService {
                             orderInfo.setOrderStatus(OrderConstants.DRIVER_RECEIVE_ORDER);
                             orderInfoMapper.updateById(orderInfo);
                             lock.unlock();
-                            return listCommonResult;
+                            //通知司机
+                            JSONObject driverContent = new JSONObject();
+                            driverContent.put("passengerId", orderInfo.getPassengerId());
+                            driverContent.put("passengerPhone", orderInfo.getPassengerPhone());
+                            driverContent.put("departure", orderInfo.getDeparture());
+                            driverContent.put("depLongitude", orderInfo.getDepLongitude());
+                            driverContent.put("depLatitude", orderInfo.getDepLatitude());
+                            driverContent.put("destination", orderInfo.getDestination());
+                            driverContent.put("destLongitude()", orderInfo.getDestLongitude());
+                            driverContent.put("destLatitude()", orderInfo.getDestLatitude());
+                            serviceSsePushClient.push(orderInfo.getDriverId().toString(), IdentityConstants.IDENTITY_DRIVER,driverContent.toJSONString());
+                            return CommonResult.success(carArray.get(i));
                         }
                         lock.unlock();
 
