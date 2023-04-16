@@ -2,6 +2,7 @@ package com.fran.controller;
 
 import com.fran.dto.CommonResult;
 import com.fran.response.TerminalResponse;
+import com.fran.response.TrSearchResponse;
 import com.fran.service.TerminalServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,5 +25,10 @@ public class TerminalController {
     @PostMapping("/aroundSearch")
     public CommonResult<List<TerminalResponse>> aroundSearch(String center, Integer radius){
         return terminalService.aroundSearch(center,radius);
+    }
+
+    @PostMapping("/trackSearch")
+    public CommonResult<TrSearchResponse> trackSearch(String tid, Long startTime, Long endTime){
+        return terminalService.trackSearch(tid,startTime,endTime);
     }
 }

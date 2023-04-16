@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fran.constant.AMapConstants;
 import com.fran.dto.CommonResult;
+import com.fran.request.PointRequest;
 import com.fran.response.TerminalResponse;
 import com.fran.response.TrackResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 @Service
@@ -48,4 +51,6 @@ public class TrackClient {
         trackResponse.setTrname(trname);
         return CommonResult.success(trackResponse);
     }
+
+
 }

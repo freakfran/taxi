@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.fran.constant.AMapConstants;
 import com.fran.dto.CommonResult;
 import com.fran.response.TerminalResponse;
+import com.fran.response.TrSearchResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -94,5 +95,43 @@ public class TerminalClient {
         }
 
         return CommonResult.success(list);
+    }
+
+    public CommonResult<TrSearchResponse> trackSearch(String tid, Long startTime, Long endTime){
+        //拼接url
+        StringBuilder url = new StringBuilder();
+        url.append(AMapConstants.TRACK_SEARCH_URL);
+        url.append("?");
+        url.append("key=" + amapKey);
+        url.append("&sid=" + sid);
+        url.append("&tid=" + tid);
+        url.append("&starttime=" + startTime);
+        url.append("&endtime=" + endTime);
+        log.info(url.toString());
+
+        ResponseEntity<String> entity = restTemplate.getForEntity(url.toString(), String.class);
+        String body = entity.getBody();
+        //System.out.println(body);
+        JSONObject bodyJson = JSON.parseObject(body);
+        JSONObject data = bodyJson.getJSONObject("data");
+        Integer counts = data.getInteger("counts");
+        if(counts==0){
+            return null;
+        }
+        JSONArray tracks = data.getJSONArray("tracks");
+        Long driveMile = 0L;
+        Long driveTime = 0L;
+        for(int i = 0;i < tracks.size();i++){
+            JSONObject track = tracks.getJSONObject(i);
+            Long distance = track.getLong("distance");
+            Long time = track.getLong("time");
+            time = time/(1000*60);//转换成分钟
+            driveMile+=distance;
+            driveTime+=time;
+        }
+        TrSearchResponse trSearchResponse = new TrSearchResponse();
+        trSearchResponse.setDriveMile(driveMile);
+        trSearchResponse.setDriveTime(driveTime);
+        return CommonResult.success(trSearchResponse);
     }
 }

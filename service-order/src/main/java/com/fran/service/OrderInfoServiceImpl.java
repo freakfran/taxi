@@ -19,6 +19,7 @@ import com.fran.remote.ServiceSsePushClient;
 import com.fran.request.OrderRequest;
 import com.fran.response.OrderDriverResponse;
 import com.fran.response.TerminalResponse;
+import com.fran.response.TrSearchResponse;
 import com.fran.util.RedisKeyUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
@@ -29,6 +30,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -162,6 +164,14 @@ public class OrderInfoServiceImpl implements OrderInfoService {
         orderInfo.setPassengerGetoffLongitude(orderRequest.getPassengerGetoffLongitude());
         orderInfo.setPassengerGetoffLatitude(orderRequest.getPassengerGetoffLatitude());
         orderInfo.setOrderStatus(OrderConstants.PASSENGER_GET_OFF);
+
+        CommonResult<Car> carById = serviceDriverUserClient.getCarById(orderInfo.getCarId());
+        CommonResult<TrSearchResponse> trSearchResponseCommonResult = serviceMapClient.trackSearch(carById.getData().getTid().toString()
+                , orderInfo.getPickUpPassengerTime().toInstant(ZoneOffset.ofHours(8)).toEpochMilli()
+                , orderInfo.getPassengerGetoffTime().toInstant(ZoneOffset.ofHours(8)).toEpochMilli());//东八区时间转毫秒值
+        TrSearchResponse data = trSearchResponseCommonResult.getData();
+        orderInfo.setDriveMile(data.getDriveMile());
+        orderInfo.setDriveTime(data.getDriveTime());
         orderInfoMapper.updateById(orderInfo);
         return CommonResult.success();
     }
