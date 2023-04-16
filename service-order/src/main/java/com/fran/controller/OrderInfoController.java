@@ -32,6 +32,11 @@ public class OrderInfoController {
         return orderService.arriveDeparture(orderRequest);
     }
 
+    @PostMapping("/pick_up_passenger")
+    public CommonResult pickUpPassenger(@RequestBody OrderRequest orderRequest){
+        return orderService.pickUpPassenger(orderRequest);
+    }
+
 
 
 

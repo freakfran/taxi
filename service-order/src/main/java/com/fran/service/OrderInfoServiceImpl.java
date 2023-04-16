@@ -142,6 +142,18 @@ public class OrderInfoServiceImpl implements OrderInfoService {
         return CommonResult.success();
     }
 
+    @Override
+    public CommonResult pickUpPassenger(OrderRequest orderRequest) {
+        Long orderId = orderRequest.getOrderId();
+        OrderInfo orderInfo = orderInfoMapper.selectById(orderId);
+        orderInfo.setPickUpPassengerTime(LocalDateTime.now());
+        orderInfo.setPickUpPassengerLongitude(orderRequest.getPickUpPassengerLongitude());
+        orderInfo.setPickUpPassengerLatitude(orderRequest.getPickUpPassengerLatitude());
+        orderInfo.setOrderStatus(OrderConstants.PICK_UP_PASSENGER);
+        orderInfoMapper.updateById(orderInfo);
+        return CommonResult.success();
+    }
+
     private Long countPassengerOrderGoingOn(Long passengerId){
         QueryWrapper<OrderInfo> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("passenger_id",passengerId);
