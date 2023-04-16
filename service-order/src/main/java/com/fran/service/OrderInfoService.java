@@ -14,4 +14,6 @@ public interface OrderInfoService {
     public CommonResult arriveDeparture(OrderRequest orderRequest);
 
     public CommonResult pickUpPassenger(OrderRequest orderRequest);
+
+    public CommonResult passengerGetoff(OrderRequest orderRequest);
 }
