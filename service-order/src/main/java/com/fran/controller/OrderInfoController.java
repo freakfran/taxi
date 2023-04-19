@@ -42,6 +42,11 @@ public class OrderInfoController {
         return orderService.passengerGetoff(orderRequest);
     }
 
+    @PostMapping("/pay")
+    public CommonResult pay(@RequestParam("orderId")String orderId){
+        return orderService.pay(orderId);
+    }
+
 
 
 

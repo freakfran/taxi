@@ -20,7 +20,7 @@
         <module>service-order</module>
         <module>service-order-8989</module>
         <module>service-sse-push</module>
-        <module>test-pay</module>
+        <module>service-pay</module>
     </modules>
     <packaging>pom</packaging>
 

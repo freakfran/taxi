@@ -12,10 +12,7 @@ import com.fran.mapper.OrderInfoMapper;
 import com.fran.pojo.Car;
 import com.fran.pojo.OrderInfo;
 import com.fran.pojo.PriceRule;
-import com.fran.remote.ServiceDriverUserClient;
-import com.fran.remote.ServiceMapClient;
-import com.fran.remote.ServicePriceClient;
-import com.fran.remote.ServiceSsePushClient;
+import com.fran.remote.*;
 import com.fran.request.OrderRequest;
 import com.fran.response.OrderDriverResponse;
 import com.fran.response.TerminalResponse;
@@ -181,6 +178,14 @@ public class OrderInfoServiceImpl implements OrderInfoService {
         CommonResult<Double> priceData = servicePriceClient.calculatePrice(driveMile.intValue(), driveTime.intValue(), address, vehicleType);
         Double price = priceData.getData();
         orderInfo.setPrice(price);
+        orderInfoMapper.updateById(orderInfo);
+        return CommonResult.success();
+    }
+
+    @Override
+    public CommonResult pay(String orderId) {
+        OrderInfo orderInfo = orderInfoMapper.selectById(orderId);
+        orderInfo.setOrderStatus(OrderConstants.SUCCESS_PAY);
         orderInfoMapper.updateById(orderInfo);
         return CommonResult.success();
     }

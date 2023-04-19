@@ -2,6 +2,8 @@ package com.fran.controller;
 
 import com.alipay.easysdk.factory.Factory;
 import com.alipay.easysdk.payment.page.models.AlipayTradePagePayResponse;
+import com.fran.service.PayServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +18,8 @@ import java.util.Map;
 @RequestMapping("/alipay")
 @ResponseBody
 public class AlipayController {
+    @Autowired
+    private PayServiceImpl payService;
     @GetMapping("/pay")
     public String pay(String subject,String outTradeNo,String totalAmount){
         AlipayTradePagePayResponse response = null;
@@ -39,9 +43,8 @@ public class AlipayController {
 
             if(Factory.Payment.Common().verifyNotify(parameter)){
                 System.out.println("验证通过");
-                for (String name:parameter.keySet()) {
-                    System.out.println(name+":"+parameter.get(name));
-                }
+                String outTradeNo = parameter.get("out_trade_no");
+                payService.pay(outTradeNo);
             }else {
                 System.out.println("验证不通过");
             }
