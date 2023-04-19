@@ -18,6 +18,7 @@ public class PayServiceImpl implements PayService{
         //封装消息
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("price",price);
+        jsonObject.put("orderId",orderId);
         //推送消息
         serviceSSEPushClient.push(passengerId.toString(), IdentityConstants.IDENTITY_PASSENGER,jsonObject.toJSONString());
         //返回
