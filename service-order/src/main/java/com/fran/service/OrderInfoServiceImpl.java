@@ -168,10 +168,19 @@ public class OrderInfoServiceImpl implements OrderInfoService {
         CommonResult<Car> carById = serviceDriverUserClient.getCarById(orderInfo.getCarId());
         CommonResult<TrSearchResponse> trSearchResponseCommonResult = serviceMapClient.trackSearch(carById.getData().getTid().toString()
                 , orderInfo.getPickUpPassengerTime().toInstant(ZoneOffset.ofHours(8)).toEpochMilli()
+                //,1681635591000L);
                 , orderInfo.getPassengerGetoffTime().toInstant(ZoneOffset.ofHours(8)).toEpochMilli());//东八区时间转毫秒值
         TrSearchResponse data = trSearchResponseCommonResult.getData();
-        orderInfo.setDriveMile(data.getDriveMile());
-        orderInfo.setDriveTime(data.getDriveTime());
+        Long driveMile = data.getDriveMile();
+        Long driveTime = data.getDriveTime();
+        orderInfo.setDriveMile(driveMile);
+        orderInfo.setDriveTime(driveTime);
+        //获取价格
+        String address = orderInfo.getAddress();
+        String vehicleType = orderInfo.getVehicleType();
+        CommonResult<Double> priceData = servicePriceClient.calculatePrice(driveMile.intValue(), driveTime.intValue(), address, vehicleType);
+        Double price = priceData.getData();
+        orderInfo.setPrice(price);
         orderInfoMapper.updateById(orderInfo);
         return CommonResult.success();
     }
@@ -263,6 +272,13 @@ public class OrderInfoServiceImpl implements OrderInfoService {
                         //确认该司机是否有进行中的订单
                         OrderDriverResponse driverData = availableDriver.getData();
                         Long driverId = driverData.getDriverId();
+                        //判断车型是否符合
+                        String vehicleTypeDB = driverData.getVehicleType();
+                        String vehicleType = orderInfo.getVehicleType();
+                        if(!vehicleTypeDB.trim().equals(vehicleType.trim())){
+                            log.info("车型不符合");
+                            continue;
+                        }
                         //解决并发问题，一定要用internal
                         //synchronized ((driverId+"").intern())
                         String lockKey = (driverId+"").intern();

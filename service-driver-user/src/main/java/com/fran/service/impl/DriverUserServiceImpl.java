@@ -103,6 +103,7 @@ public class DriverUserServiceImpl implements DriverUserService {
         map.put("id",carId);
         List<Car> cars = carMapper.selectByMap(map);
         orderDriverResponse.setVehicleNo(cars.get(0).getVehicleNo());
+        orderDriverResponse.setVehicleType(cars.get(0).getVehicleType());
         return CommonResult.success(orderDriverResponse);
     }
 

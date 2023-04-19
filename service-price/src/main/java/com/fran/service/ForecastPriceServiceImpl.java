@@ -75,6 +75,24 @@ public class ForecastPriceServiceImpl implements ForecastPriceService{
         return CommonResult.success(forecastPriceResponse);
     }
 
+    @Override
+    public CommonResult<Double> calculatePrice(Integer distance, Integer duration, String cityCode, String vehicleType) {
+        log.info("读取计价规则");
+        QueryWrapper<PriceRule> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("city_code",cityCode);
+        queryWrapper.eq("vehicle_type",vehicleType);
+        queryWrapper.orderByDesc("fare_version");
+        List<PriceRule> priceRules = priceRuleMapper.selectList(queryWrapper);
+        if(priceRules.size()==0){
+            return CommonResult.fail(CommonStatusEnum.PRICE_RULE_EMPTY.getCode()
+                    ,CommonStatusEnum.PRICE_RULE_EMPTY.getMessage());
+        }
+        PriceRule priceRule = priceRules.get(0);
+        log.info("计算价格");
+        Double price = getPrice(distance, duration, priceRule);
+        return CommonResult.success(price);
+    }
+
     private Double getPrice(Integer distance,Integer duration,PriceRule priceRule){
         BigDecimal price = new BigDecimal(0);
 
