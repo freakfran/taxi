@@ -19,4 +19,6 @@ public interface OrderInfoService {
     public CommonResult passengerGetoff(OrderRequest orderRequest);
 
     public CommonResult pay(String orderId);
+
+    public CommonResult cancel(Long orderId,String identity);
 }

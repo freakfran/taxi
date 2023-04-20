@@ -47,6 +47,11 @@ public class OrderInfoController {
         return orderService.pay(orderId);
     }
 
+    @PostMapping("/cancel")
+    public CommonResult cancel(@RequestParam("orderId") Long orderId,@RequestParam("identity")String identity){
+        return orderService.cancel(orderId,identity);
+    }
+
 
 
 
