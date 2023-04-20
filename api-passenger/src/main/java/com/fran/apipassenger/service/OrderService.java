@@ -6,4 +6,6 @@ import com.fran.request.OrderRequest;
 public interface OrderService {
 
     public CommonResult add(OrderRequest orderRequest);
+
+    public CommonResult cancel(Long orderId);
 }

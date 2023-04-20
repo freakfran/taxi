@@ -1,5 +1,7 @@
 package com.fran.service;
 
+import com.fran.constant.IdentityConstants;
+import com.fran.constant.OrderConstants;
 import com.fran.dto.CommonResult;
 import com.fran.remote.ServiceOrderClient;
 import com.fran.request.OrderRequest;
@@ -29,6 +31,11 @@ public class OrderServiceImpl implements OrderService{
     @Override
     public CommonResult passengerGetoff(OrderRequest orderRequest) {
         return serviceOrderClient.passengerGetoff(orderRequest);
+    }
+
+    @Override
+    public CommonResult cancel(Long orderId) {
+        return serviceOrderClient.cancel(orderId, IdentityConstants.IDENTITY_DRIVER);
     }
 
 

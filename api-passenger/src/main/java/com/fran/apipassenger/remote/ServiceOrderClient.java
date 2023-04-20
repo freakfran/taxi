@@ -7,6 +7,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -17,4 +18,7 @@ public interface ServiceOrderClient {
 
     @PostMapping("/order/testDispatch/{orderId}")
     public CommonResult<List<TerminalResponse>> testDispatch(@PathVariable("orderId")Long orderId);
+
+    @PostMapping("/cancel")
+    public CommonResult cancel(@RequestParam("orderId") Long orderId, @RequestParam("identity")String identity);
 }

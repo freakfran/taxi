@@ -106,10 +106,16 @@ public class OrderInfoServiceImpl implements OrderInfoService {
             if(listCommonResult.getCode()==CommonStatusEnum.SUCCESS.getCode()){
                 break;
             }
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            if(i==5){
+                //订单无效
+                orderInfo.setOrderStatus(OrderConstants.ORDER_INVALID);
+                orderInfoMapper.updateById(orderInfo);
+            }else{
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
         return CommonResult.success();

@@ -25,4 +25,9 @@ public class OrderController {
     public CommonResult<List<TerminalResponse>> testDispatch(@PathVariable("orderId")Long orderId){
         return orderService.testDispatch(orderId);
     }
+
+    @PostMapping("/cancel")
+    public CommonResult cancel(@RequestParam("orderId") Long orderId){
+        return orderService.cancel(orderId);
+    }
 }

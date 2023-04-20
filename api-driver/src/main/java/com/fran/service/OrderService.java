@@ -13,5 +13,7 @@ public interface OrderService {
 
     public CommonResult passengerGetoff(OrderRequest orderRequest);
 
+    public CommonResult cancel(Long orderId);
+
 
 }
